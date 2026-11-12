@@ -1,0 +1,14 @@
+node_modules/
+dist/
+render-dist/
+.cache/
+test-results/
+*.tgz
+
+# Local QA renders and handoff output
+/tmp-render/
+*.mp4
+
+.DS_Store
+*.log
+.impeccable.md

@@ -1,0 +1,4 @@
+- insert:
+    - id: product-previs
+      name: dsh-product-previs
+      inject: [webServer, tools]
