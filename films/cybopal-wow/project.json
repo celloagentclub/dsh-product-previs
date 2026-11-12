@@ -1,0 +1,2968 @@
+{
+  "schemaVersion": 2,
+  "id": "cybopal-wow",
+  "name": "CYBOPAL",
+  "revision": 1,
+  "fps": 24,
+  "durationFrames": 963,
+  "width": 1920,
+  "height": 1080,
+  "assets": [
+    {
+      "id": "arm-white",
+      "name": "CyboPal 白模",
+      "kind": "model",
+      "file": "assets/arm-white.glb",
+      "sourceName": "arm-white.glb",
+      "hash": "arm-white",
+      "originalBytes": 0,
+      "previewBytes": 0,
+      "triangles": 960,
+      "bounds": {
+        "min": [
+          -0.075,
+          0,
+          -0.3
+        ],
+        "max": [
+          0.28400000000000003,
+          0.685,
+          0.3
+        ]
+      },
+      "parts": [
+        {
+          "id": "base",
+          "label": "底座",
+          "nodeIndex": 1,
+          "bounds": {
+            "min": [
+              -0.075,
+              0,
+              -0.1
+            ],
+            "max": [
+              0.077,
+              0.06,
+              0.1
+            ]
+          },
+          "center": [
+            0.0010000000000000009,
+            0.03,
+            0
+          ],
+          "role": "product"
+        },
+        {
+          "id": "seg1",
+          "label": "第一段旋转机械臂",
+          "nodeIndex": 2,
+          "bounds": {
+            "min": [
+              -0.0580863738740265,
+              0.04415641008645241,
+              -0.028
+            ],
+            "max": [
+              0.023086373874026494,
+              0.1268435899135476,
+              0.028
+            ]
+          },
+          "center": [
+            -0.0175,
+            0.0855,
+            0
+          ],
+          "role": "product"
+        },
+        {
+          "id": "seg2",
+          "label": "第二段旋转机械臂",
+          "nodeIndex": 3,
+          "bounds": {
+            "min": [
+              -0.06605581771584955,
+              0.10328403045625988,
+              -0.032
+            ],
+            "max": [
+              0.09655581771584955,
+              0.5232159695437401,
+              0.032
+            ]
+          },
+          "center": [
+            0.01525,
+            0.31325,
+            0
+          ],
+          "role": "product"
+        },
+        {
+          "id": "seg3",
+          "label": "第三段旋转机械臂",
+          "nodeIndex": 4,
+          "bounds": {
+            "min": [
+              0.0655,
+              0.48949999999999994,
+              -0.026
+            ],
+            "max": [
+              0.1655,
+              0.5415,
+              0.026
+            ]
+          },
+          "center": [
+            0.1155,
+            0.5155,
+            0
+          ],
+          "role": "product"
+        },
+        {
+          "id": "seg4",
+          "label": "第四段旋转机械臂",
+          "nodeIndex": 5,
+          "bounds": {
+            "min": [
+              0.16534314060527405,
+              0.4910005126069267,
+              -0.024
+            ],
+            "max": [
+              0.24215685939472595,
+              0.5394994873930733,
+              0.024
+            ]
+          },
+          "center": [
+            0.20375,
+            0.51525,
+            0
+          ],
+          "role": "product"
+        },
+        {
+          "id": "seg5",
+          "label": "第五段旋转机械臂",
+          "nodeIndex": 6,
+          "bounds": {
+            "min": [
+              0.242,
+              0.495,
+              -0.02
+            ],
+            "max": [
+              0.27,
+              0.535,
+              0.02
+            ]
+          },
+          "center": [
+            0.256,
+            0.515,
+            0
+          ],
+          "role": "product"
+        },
+        {
+          "id": "bracket",
+          "label": "显示器固定支架",
+          "nodeIndex": 7,
+          "bounds": {
+            "min": [
+              0.23,
+              0.46,
+              -0.055
+            ],
+            "max": [
+              0.266,
+              0.5700000000000001,
+              0.055
+            ]
+          },
+          "center": [
+            0.248,
+            0.515,
+            0
+          ],
+          "role": "product"
+        },
+        {
+          "id": "display",
+          "label": "Studio Display",
+          "nodeIndex": 8,
+          "bounds": {
+            "min": [
+              0.256,
+              0.345,
+              -0.3
+            ],
+            "max": [
+              0.28400000000000003,
+              0.685,
+              0.3
+            ]
+          },
+          "center": [
+            0.27,
+            0.515,
+            0
+          ],
+          "role": "screen"
+        }
+      ]
+    },
+    {
+      "id": "bed",
+      "name": "178 BPM bed",
+      "kind": "audio",
+      "file": "assets/bed.wav",
+      "hash": "bed"
+    }
+  ],
+  "objects": [
+    {
+      "id": "arm",
+      "name": "CyboPal",
+      "kind": "model",
+      "assetId": "arm-white",
+      "partIds": [
+        "base",
+        "seg1",
+        "seg2",
+        "seg3",
+        "seg4",
+        "seg5",
+        "bracket",
+        "display"
+      ],
+      "sourceOrigin": [
+        0,
+        0,
+        0
+      ],
+      "transform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "visible": true,
+      "joints": [
+        {
+          "id": "base_yaw",
+          "label": "底座旋转",
+          "pivot": [
+            0,
+            0.03,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "minDeg": -120,
+          "maxDeg": 120,
+          "restAngle": 0,
+          "affects": [
+            "base",
+            "seg1",
+            "seg2",
+            "seg3",
+            "seg4",
+            "seg5",
+            "bracket",
+            "display"
+          ]
+        },
+        {
+          "id": "seg1",
+          "label": "第一段",
+          "parentId": "base_yaw",
+          "pivot": [
+            -0.035,
+            0.111,
+            0
+          ],
+          "axis": [
+            0,
+            0,
+            1
+          ],
+          "minDeg": -25,
+          "maxDeg": 25,
+          "restAngle": 0,
+          "affects": [
+            "seg1"
+          ]
+        },
+        {
+          "id": "seg2",
+          "label": "第二段",
+          "parentId": "base_yaw",
+          "pivot": [
+            -0.035,
+            0.111,
+            0
+          ],
+          "axis": [
+            0,
+            0,
+            1
+          ],
+          "minDeg": -58,
+          "maxDeg": 36,
+          "restAngle": 0,
+          "affects": [
+            "seg2",
+            "seg3",
+            "seg4",
+            "seg5",
+            "bracket",
+            "display"
+          ]
+        },
+        {
+          "id": "seg3",
+          "label": "第三段",
+          "parentId": "seg2",
+          "pivot": [
+            0.0655,
+            0.5155,
+            0
+          ],
+          "axis": [
+            0,
+            0,
+            1
+          ],
+          "minDeg": -40,
+          "maxDeg": 72,
+          "restAngle": 0,
+          "affects": [
+            "seg3",
+            "seg4",
+            "seg5",
+            "bracket",
+            "display"
+          ]
+        },
+        {
+          "id": "seg4",
+          "label": "第四段",
+          "parentId": "seg3",
+          "pivot": [
+            0.1655,
+            0.5155,
+            0
+          ],
+          "axis": [
+            0,
+            0,
+            1
+          ],
+          "minDeg": -45,
+          "maxDeg": 45,
+          "restAngle": 0,
+          "affects": [
+            "seg4",
+            "seg5",
+            "bracket",
+            "display"
+          ]
+        },
+        {
+          "id": "portrait",
+          "label": "横竖屏",
+          "parentId": "seg4",
+          "pivot": [
+            0.27,
+            0.515,
+            0
+          ],
+          "axis": [
+            1,
+            0,
+            0
+          ],
+          "minDeg": 0,
+          "maxDeg": 90,
+          "restAngle": 0,
+          "affects": [
+            "bracket",
+            "display"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "panel",
+      "name": "屏幕内容",
+      "kind": "screen",
+      "transform": {
+        "position": [
+          0.286,
+          0.515,
+          0
+        ],
+        "rotation": [
+          0,
+          90,
+          0
+        ],
+        "scale": [
+          0.56,
+          0.3,
+          1
+        ]
+      },
+      "visible": true,
+      "screen": {
+        "text": "CYBOPAL",
+        "mount": {
+          "objectId": "arm",
+          "partId": "display"
+        }
+      }
+    },
+    {
+      "id": "cable",
+      "name": "线缆",
+      "kind": "box",
+      "color": "#141414",
+      "transform": {
+        "position": [
+          0.18,
+          0.05,
+          0.09
+        ],
+        "rotation": [
+          0,
+          20,
+          0
+        ],
+        "scale": [
+          0.1,
+          0.012,
+          0.012
+        ]
+      },
+      "visible": true
+    },
+    {
+      "id": "floor",
+      "name": "地面",
+      "kind": "plane",
+      "color": "#070707",
+      "transform": {
+        "position": [
+          0.12,
+          -0.004,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          8,
+          1,
+          8
+        ]
+      },
+      "visible": true
+    }
+  ],
+  "shots": [
+    {
+      "id": "s01",
+      "name": "字标",
+      "start": 0,
+      "end": 32,
+      "description": "黑场大字 CYBOPAL，字几乎不动，像镜头还在慢慢后退。",
+      "camera": {
+        "from": {
+          "position": [
+            1.1,
+            0.7,
+            1.4
+          ],
+          "target": [
+            0.12,
+            0.4,
+            0
+          ],
+          "focalLength": 40,
+          "focusDistance": 2,
+          "aperture": 4
+        },
+        "to": {
+          "position": [
+            1.2,
+            0.72,
+            1.5
+          ],
+          "target": [
+            0.12,
+            0.4,
+            0
+          ],
+          "focalLength": 40,
+          "focusDistance": 2,
+          "aperture": 4
+        },
+        "move": "static",
+        "easing": "linear"
+      },
+      "kind": "broll-code",
+      "sequenceId": "teaser",
+      "broll": {
+        "template": "kinetic",
+        "lines": [
+          "CYBOPAL"
+        ]
+      },
+      "intent": {
+        "role": "text",
+        "beats": 4
+      },
+      "videoPrompt": "Photoreal product commercial, 1.33s, 24fps, 16:9. Pure black studio, thin rim light on the metal, soft contact shadow, faint floor reflection. Subject: a six-axis AI monitor arm on a desk, matte metal segments, a 27-inch display. static, composition centered. Full-frame kinetic type on black: \"CYBOPAL\". No product, no people. No people, no voiceover, no hands. Lens around 40mm, aperture f/4."
+    },
+    {
+      "id": "s02",
+      "name": "肩关节微距",
+      "start": 32,
+      "end": 97,
+      "description": "肩轴微距，匀速后拉，轮廓光勾出转轴。",
+      "camera": {
+        "from": {
+          "position": [
+            0.29602145863390467,
+            0.11918861010789689,
+            0.06664104325699288
+          ],
+          "target": [
+            -0.016232899367836104,
+            0.08080330990630391,
+            -0.0035982068463797303
+          ],
+          "focalLength": 85,
+          "focusDistance": 0.32235038020410317,
+          "aperture": 2.8
+        },
+        "to": {
+          "position": [
+            0.5370563465861941,
+            0.14508836956298116,
+            0.11787459028265058
+          ],
+          "target": [
+            -0.016712737033215543,
+            0.08220566409269543,
+            -0.002038417003846016
+          ],
+          "focalLength": 85,
+          "focusDistance": 0.5700820659663263,
+          "aperture": 2.8
+        },
+        "move": "linear",
+        "easing": "linear"
+      },
+      "kind": "3d",
+      "sequenceId": "teaser",
+      "intent": {
+        "role": "product",
+        "beats": 8,
+        "move": "slow-pull",
+        "composition": "macro",
+        "subject": "shoulder",
+        "focal": 85,
+        "fill": 0.7,
+        "pullSpeed": 0.1
+      },
+      "videoPrompt": "Photoreal product commercial, 2.71s, 24fps, 16:9. Pure black studio, thin rim light on the metal, soft contact shadow, faint floor reflection. Subject: a six-axis AI monitor arm on a desk, matte metal segments, a 27-inch display. Slow constant pull-back, same speed as the other product shots, composition macro. The product itself holds still. The arm holds its pose. No people, no voiceover, no hands. Lens around 85mm, aperture f/2.8."
+    },
+    {
+      "id": "s03",
+      "name": "六轴",
+      "start": 97,
+      "end": 113,
+      "description": "半拍不到的字卡。",
+      "camera": {
+        "from": {
+          "position": [
+            1.1,
+            0.7,
+            1.4
+          ],
+          "target": [
+            0.12,
+            0.4,
+            0
+          ],
+          "focalLength": 40,
+          "focusDistance": 2,
+          "aperture": 4
+        },
+        "to": {
+          "position": [
+            1.2,
+            0.72,
+            1.5
+          ],
+          "target": [
+            0.12,
+            0.4,
+            0
+          ],
+          "focalLength": 40,
+          "focusDistance": 2,
+          "aperture": 4
+        },
+        "move": "static",
+        "easing": "linear"
+      },
+      "kind": "broll-code",
+      "sequenceId": "teaser",
+      "broll": {
+        "template": "kinetic",
+        "lines": [
+          "SIX AXIS"
+        ]
+      },
+      "intent": {
+        "role": "text",
+        "beats": 2
+      },
+      "videoPrompt": "Photoreal product commercial, 0.67s, 24fps, 16:9. Pure black studio, thin rim light on the metal, soft contact shadow, faint floor reflection. Subject: a six-axis AI monitor arm on a desk, matte metal segments, a 27-inch display. static, composition centered. Full-frame kinetic type on black: \"SIX AXIS\". No product, no people. No people, no voiceover, no hands. Lens around 40mm, aperture f/4."
+    },
+    {
+      "id": "s04",
+      "name": "肘关节微距",
+      "start": 113,
+      "end": 178,
+      "description": "肘轴微距，后拉速度与上一镜相同。",
+      "camera": {
+        "from": {
+          "position": [
+            0.34272824754868647,
+            0.5399162038238888,
+            0.048298855013253456
+          ],
+          "target": [
+            0.11847074006138006,
+            0.5087835451024095,
+            -0.006300044701276692
+          ],
+          "focalLength": 85,
+          "focusDistance": 0.2328985013981943,
+          "aperture": 2.8
+        },
+        "to": {
+          "position": [
+            0.5775558729808874,
+            0.5651489784805872,
+            0.09821300766025796
+          ],
+          "target": [
+            0.11654445160427306,
+            0.512072927202917,
+            -0.0031812928011095633
+          ],
+          "focalLength": 85,
+          "focusDistance": 0.4750046336878896,
+          "aperture": 2.8
+        },
+        "move": "linear",
+        "easing": "linear"
+      },
+      "kind": "3d",
+      "sequenceId": "teaser",
+      "intent": {
+        "role": "product",
+        "beats": 8,
+        "move": "slow-pull",
+        "composition": "macro",
+        "subject": "elbow",
+        "focal": 85,
+        "fill": 0.68,
+        "pullSpeed": 0.1
+      },
+      "videoPrompt": "Photoreal product commercial, 2.71s, 24fps, 16:9. Pure black studio, thin rim light on the metal, soft contact shadow, faint floor reflection. Subject: a six-axis AI monitor arm on a desk, matte metal segments, a 27-inch display. Slow constant pull-back, same speed as the other product shots, composition macro. The product itself holds still. The arm holds its pose. No people, no voiceover, no hands. Lens around 85mm, aperture f/2.8."
+    },
+    {
+      "id": "s05",
+      "name": "它会动",
+      "start": 178,
+      "end": 194,
+      "description": "短字卡，把动作承诺出去。",
+      "camera": {
+        "from": {
+          "position": [
+            1.1,
+            0.7,
+            1.4
+          ],
+          "target": [
+            0.12,
+            0.4,
+            0
+          ],
+          "focalLength": 40,
+          "focusDistance": 2,
+          "aperture": 4
+        },
+        "to": {
+          "position": [
+            1.2,
+            0.72,
+            1.5
+          ],
+          "target": [
+            0.12,
+            0.4,
+            0
+          ],
+          "focalLength": 40,
+          "focusDistance": 2,
+          "aperture": 4
+        },
+        "move": "static",
+        "easing": "linear"
+      },
+      "kind": "broll-code",
+      "sequenceId": "teaser",
+      "broll": {
+        "template": "kinetic",
+        "lines": [
+          "IT MOVES"
+        ]
+      },
+      "intent": {
+        "role": "text",
+        "beats": 2
+      },
+      "videoPrompt": "Photoreal product commercial, 0.67s, 24fps, 16:9. Pure black studio, thin rim light on the metal, soft contact shadow, faint floor reflection. Subject: a six-axis AI monitor arm on a desk, matte metal segments, a 27-inch display. static, composition centered. Full-frame kinetic type on black: \"IT MOVES\". No product, no people. No people, no voiceover, no hands. Lens around 40mm, aperture f/4."
+    },
+    {
+      "id": "s06",
+      "name": "AI 底座",
+      "start": 194,
+      "end": 218,
+      "description": "两行参数字。",
+      "camera": {
+        "from": {
+          "position": [
+            1.1,
+            0.7,
+            1.4
+          ],
+          "target": [
+            0.12,
+            0.4,
+            0
+          ],
+          "focalLength": 40,
+          "focusDistance": 2,
+          "aperture": 4
+        },
+        "to": {
+          "position": [
+            1.2,
+            0.72,
+            1.5
+          ],
+          "target": [
+            0.12,
+            0.4,
+            0
+          ],
+          "focalLength": 40,
+          "focusDistance": 2,
+          "aperture": 4
+        },
+        "move": "static",
+        "easing": "linear"
+      },
+      "kind": "broll-code",
+      "sequenceId": "tech",
+      "broll": {
+        "template": "spec",
+        "lines": [
+          "AI",
+          "BASE"
+        ]
+      },
+      "intent": {
+        "role": "text",
+        "beats": 3
+      },
+      "videoPrompt": "Photoreal product commercial, 1.00s, 24fps, 16:9. Pure black studio, thin rim light on the metal, soft contact shadow, faint floor reflection. Subject: a six-axis AI monitor arm on a desk, matte metal segments, a 27-inch display. static, composition centered. Full-frame kinetic type on black: \"AI / BASE\". No product, no people. No people, no voiceover, no hands. Lens around 40mm, aperture f/4."
+    },
+    {
+      "id": "s07",
+      "name": "底座微距",
+      "start": 218,
+      "end": 283,
+      "description": "底座微距后拉，金属边缘吃到轮廓光。",
+      "camera": {
+        "from": {
+          "position": [
+            0.27606003709563,
+            0.059555840886791056,
+            0.058465815737875876
+          ],
+          "target": [
+            0.00535018370337083,
+            0.015891278636231982,
+            -0.005782058217698116
+          ],
+          "focalLength": 70,
+          "focusDistance": 0.2816348842526485,
+          "aperture": 2.8
+        },
+        "to": {
+          "position": [
+            0.4915175571671355,
+            0.08270725265978532,
+            0.10426272539022491
+          ],
+          "target": [
+            0.004167193716718581,
+            0.022379549732127153,
+            -0.011122444172253573
+          ],
+          "focalLength": 70,
+          "focusDistance": 0.504443798505585,
+          "aperture": 2.8
+        },
+        "move": "linear",
+        "easing": "linear"
+      },
+      "kind": "3d",
+      "sequenceId": "tech",
+      "intent": {
+        "role": "product",
+        "beats": 8,
+        "move": "slow-pull",
+        "composition": "macro",
+        "subject": "base",
+        "focal": 70,
+        "fill": 0.62,
+        "pullSpeed": 0.1
+      },
+      "videoPrompt": "Photoreal product commercial, 2.71s, 24fps, 16:9. Pure black studio, thin rim light on the metal, soft contact shadow, faint floor reflection. Subject: a six-axis AI monitor arm on a desk, matte metal segments, a 27-inch display. Slow constant pull-back, same speed as the other product shots, composition macro. The product itself holds still. The arm holds its pose. No people, no voiceover, no hands. Lens around 70mm, aperture f/2.8."
+    },
+    {
+      "id": "s08",
+      "name": "结构",
+      "start": 283,
+      "end": 299,
+      "description": "六段铰链的结构示意。",
+      "camera": {
+        "from": {
+          "position": [
+            1.1,
+            0.7,
+            1.4
+          ],
+          "target": [
+            0.12,
+            0.4,
+            0
+          ],
+          "focalLength": 40,
+          "focusDistance": 2,
+          "aperture": 4
+        },
+        "to": {
+          "position": [
+            1.2,
+            0.72,
+            1.5
+          ],
+          "target": [
+            0.12,
+            0.4,
+            0
+          ],
+          "focalLength": 40,
+          "focusDistance": 2,
+          "aperture": 4
+        },
+        "move": "static",
+        "easing": "linear"
+      },
+      "kind": "broll-code",
+      "sequenceId": "tech",
+      "broll": {
+        "template": "diagram",
+        "lines": [
+          "YAW",
+          "PITCH",
+          "ELBOW",
+          "WRIST",
+          "ROLL"
+        ]
+      },
+      "intent": {
+        "role": "text",
+        "beats": 2
+      },
+      "videoPrompt": "Photoreal product commercial, 0.67s, 24fps, 16:9. Pure black studio, thin rim light on the metal, soft contact shadow, faint floor reflection. Subject: a six-axis AI monitor arm on a desk, matte metal segments, a 27-inch display. static, composition centered. Full-frame kinetic type on black: \"YAW / PITCH / ELBOW / WRIST / ROLL\". No product, no people. No people, no voiceover, no hands. Lens around 40mm, aperture f/4."
+    },
+    {
+      "id": "s09",
+      "name": "语音指令",
+      "start": 299,
+      "end": 316,
+      "description": "界面示意：一句话让屏幕转竖。",
+      "camera": {
+        "from": {
+          "position": [
+            1.1,
+            0.7,
+            1.4
+          ],
+          "target": [
+            0.12,
+            0.4,
+            0
+          ],
+          "focalLength": 40,
+          "focusDistance": 2,
+          "aperture": 4
+        },
+        "to": {
+          "position": [
+            1.2,
+            0.72,
+            1.5
+          ],
+          "target": [
+            0.12,
+            0.4,
+            0
+          ],
+          "focalLength": 40,
+          "focusDistance": 2,
+          "aperture": 4
+        },
+        "move": "static",
+        "easing": "linear"
+      },
+      "kind": "broll-code",
+      "sequenceId": "tech",
+      "broll": {
+        "template": "ui",
+        "lines": [
+          "转到竖屏",
+          "VOICE · GESTURE"
+        ]
+      },
+      "intent": {
+        "role": "text",
+        "beats": 2
+      },
+      "videoPrompt": "Photoreal product commercial, 0.71s, 24fps, 16:9. Pure black studio, thin rim light on the metal, soft contact shadow, faint floor reflection. Subject: a six-axis AI monitor arm on a desk, matte metal segments, a 27-inch display. static, composition centered. Full-frame kinetic type on black: \"转到竖屏 / VOICE · GESTURE\". No product, no people. No people, no voiceover, no hands. Lens around 40mm, aperture f/4."
+    },
+    {
+      "id": "s10",
+      "name": "整臂后拉",
+      "start": 316,
+      "end": 396,
+      "description": "产品居中，四周留黑，匀速后拉，姿态不动。",
+      "camera": {
+        "from": {
+          "position": [
+            1.0308824810481603,
+            0.6127632755022617,
+            1.4313111665907738
+          ],
+          "target": [
+            0.15454786728429779,
+            0.3646627051772143,
+            -0.00947121551973033
+          ],
+          "focalLength": 50,
+          "focusDistance": 1.7045146291177118,
+          "aperture": 4
+        },
+        "to": {
+          "position": [
+            1.1837245749868166,
+            0.6532988002691948,
+            1.6759096470117412
+          ],
+          "target": [
+            0.1555002380553331,
+            0.3602852592028699,
+            -0.009340880585502326
+          ],
+          "focalLength": 50,
+          "focusDistance": 1.9957884564936246,
+          "aperture": 4
+        },
+        "move": "linear",
+        "easing": "linear"
+      },
+      "kind": "3d",
+      "sequenceId": "reveal",
+      "screenContent": "CYBOPAL",
+      "intent": {
+        "role": "product",
+        "beats": 10,
+        "move": "slow-pull",
+        "composition": "centered",
+        "subject": "arm",
+        "focal": 50,
+        "fill": 0.58,
+        "pullSpeed": 0.1
+      },
+      "videoPrompt": "Photoreal product commercial, 3.33s, 24fps, 16:9. Pure black studio, thin rim light on the metal, soft contact shadow, faint floor reflection. Subject: a six-axis AI monitor arm on a desk, matte metal segments, a 27-inch display. Slow constant pull-back, same speed as the other product shots, composition centered. The product itself holds still. The arm holds its pose. No people, no voiceover, no hands. Lens around 50mm, aperture f/4."
+    },
+    {
+      "id": "s11",
+      "name": "手臂",
+      "start": 396,
+      "end": 413,
+      "description": "大字 THE ARM。",
+      "camera": {
+        "from": {
+          "position": [
+            1.1,
+            0.7,
+            1.4
+          ],
+          "target": [
+            0.12,
+            0.4,
+            0
+          ],
+          "focalLength": 40,
+          "focusDistance": 2,
+          "aperture": 4
+        },
+        "to": {
+          "position": [
+            1.2,
+            0.72,
+            1.5
+          ],
+          "target": [
+            0.12,
+            0.4,
+            0
+          ],
+          "focalLength": 40,
+          "focusDistance": 2,
+          "aperture": 4
+        },
+        "move": "static",
+        "easing": "linear"
+      },
+      "kind": "broll-code",
+      "sequenceId": "reveal",
+      "broll": {
+        "template": "kinetic",
+        "lines": [
+          "THE ARM"
+        ]
+      },
+      "intent": {
+        "role": "text",
+        "beats": 2
+      },
+      "videoPrompt": "Photoreal product commercial, 0.71s, 24fps, 16:9. Pure black studio, thin rim light on the metal, soft contact shadow, faint floor reflection. Subject: a six-axis AI monitor arm on a desk, matte metal segments, a 27-inch display. static, composition centered. Full-frame kinetic type on black: \"THE ARM\". No product, no people. No people, no voiceover, no hands. Lens around 40mm, aperture f/4."
+    },
+    {
+      "id": "s12",
+      "name": "展开",
+      "start": 413,
+      "end": 493,
+      "description": "正侧面固定机位，手臂从收拢滑到展开，底座和转轴都在画里。",
+      "camera": {
+        "from": {
+          "position": [
+            0.22045720292098187,
+            0.3806099773103647,
+            1.7844746816570287
+          ],
+          "target": [
+            0.2550833586450414,
+            0.36226576806663624,
+            0.006723010784745865
+          ],
+          "focalLength": 40,
+          "focusDistance": 1.7781834787114066,
+          "aperture": 5.6
+        },
+        "to": {
+          "position": [
+            0.22045720292098187,
+            0.3806099773103647,
+            1.7844746816570287
+          ],
+          "target": [
+            0.2550833586450414,
+            0.36226576806663624,
+            0.006723010784745865
+          ],
+          "focalLength": 40,
+          "focusDistance": 1.7781834787114066,
+          "aperture": 5.6
+        },
+        "move": "static",
+        "easing": "linear"
+      },
+      "kind": "3d",
+      "sequenceId": "motion",
+      "intent": {
+        "role": "action",
+        "beats": 10,
+        "move": "locked",
+        "composition": "side",
+        "subject": "motion",
+        "focal": 40,
+        "fill": 0.48
+      },
+      "videoPrompt": "Photoreal product commercial, 3.33s, 24fps, 16:9. Pure black studio, thin rim light on the metal, soft contact shadow, faint floor reflection. Subject: a six-axis AI monitor arm on a desk, matte metal segments, a 27-inch display. Locked-off camera, composition side. The product moves; the camera does not. Base and pivots stay inside the frame. Action: 正侧面固定机位，手臂从收拢滑到展开，底座和转轴都在画里。 No people, no voiceover, no hands. Lens around 40mm, aperture f/5.6."
+    },
+    {
+      "id": "s13",
+      "name": "展开字卡",
+      "start": 493,
+      "end": 510,
+      "description": "动作之后的一个短字。",
+      "camera": {
+        "from": {
+          "position": [
+            1.1,
+            0.7,
+            1.4
+          ],
+          "target": [
+            0.12,
+            0.4,
+            0
+          ],
+          "focalLength": 40,
+          "focusDistance": 2,
+          "aperture": 4
+        },
+        "to": {
+          "position": [
+            1.2,
+            0.72,
+            1.5
+          ],
+          "target": [
+            0.12,
+            0.4,
+            0
+          ],
+          "focalLength": 40,
+          "focusDistance": 2,
+          "aperture": 4
+        },
+        "move": "static",
+        "easing": "linear"
+      },
+      "kind": "broll-code",
+      "sequenceId": "motion",
+      "broll": {
+        "template": "kinetic",
+        "lines": [
+          "UNFOLD"
+        ]
+      },
+      "intent": {
+        "role": "text",
+        "beats": 2
+      },
+      "videoPrompt": "Photoreal product commercial, 0.71s, 24fps, 16:9. Pure black studio, thin rim light on the metal, soft contact shadow, faint floor reflection. Subject: a six-axis AI monitor arm on a desk, matte metal segments, a 27-inch display. static, composition centered. Full-frame kinetic type on black: \"UNFOLD\". No product, no people. No people, no voiceover, no hands. Lens around 40mm, aperture f/4."
+    },
+    {
+      "id": "s14",
+      "name": "转竖屏",
+      "start": 510,
+      "end": 574,
+      "description": "正面固定机位，屏幕自己转到竖屏。",
+      "camera": {
+        "from": {
+          "position": [
+            2.0202564546924004,
+            0.47428599250052317,
+            1.1708153910658753e-16
+          ],
+          "target": [
+            0.12618175193822315,
+            0.4306427988745665,
+            1.1029130028936313e-18
+          ],
+          "focalLength": 45,
+          "focusDistance": 1.8945774483940205,
+          "aperture": 5.6
+        },
+        "to": {
+          "position": [
+            2.0202564546924004,
+            0.47428599250052317,
+            1.1708153910658753e-16
+          ],
+          "target": [
+            0.12618175193822315,
+            0.4306427988745665,
+            1.1029130028936313e-18
+          ],
+          "focalLength": 45,
+          "focusDistance": 1.8945774483940205,
+          "aperture": 5.6
+        },
+        "move": "static",
+        "easing": "linear"
+      },
+      "kind": "3d",
+      "sequenceId": "motion",
+      "screenContent": "PORTRAIT",
+      "intent": {
+        "role": "action",
+        "beats": 8,
+        "move": "locked",
+        "composition": "front",
+        "subject": "motion",
+        "focal": 45,
+        "fill": 0.55
+      },
+      "videoPrompt": "Photoreal product commercial, 2.67s, 24fps, 16:9. Pure black studio, thin rim light on the metal, soft contact shadow, faint floor reflection. Subject: a six-axis AI monitor arm on a desk, matte metal segments, a 27-inch display. Locked-off camera, composition front. The product moves; the camera does not. Base and pivots stay inside the frame. Action: 正面固定机位，屏幕自己转到竖屏。 No people, no voiceover, no hands. Lens around 45mm, aperture f/5.6."
+    },
+    {
+      "id": "s15",
+      "name": "竖屏字卡",
+      "start": 574,
+      "end": 591,
+      "description": "短字 PORTRAIT。",
+      "camera": {
+        "from": {
+          "position": [
+            1.1,
+            0.7,
+            1.4
+          ],
+          "target": [
+            0.12,
+            0.4,
+            0
+          ],
+          "focalLength": 40,
+          "focusDistance": 2,
+          "aperture": 4
+        },
+        "to": {
+          "position": [
+            1.2,
+            0.72,
+            1.5
+          ],
+          "target": [
+            0.12,
+            0.4,
+            0
+          ],
+          "focalLength": 40,
+          "focusDistance": 2,
+          "aperture": 4
+        },
+        "move": "static",
+        "easing": "linear"
+      },
+      "kind": "broll-code",
+      "sequenceId": "motion",
+      "broll": {
+        "template": "kinetic",
+        "lines": [
+          "PORTRAIT"
+        ]
+      },
+      "intent": {
+        "role": "text",
+        "beats": 2
+      },
+      "videoPrompt": "Photoreal product commercial, 0.71s, 24fps, 16:9. Pure black studio, thin rim light on the metal, soft contact shadow, faint floor reflection. Subject: a six-axis AI monitor arm on a desk, matte metal segments, a 27-inch display. static, composition centered. Full-frame kinetic type on black: \"PORTRAIT\". No product, no people. No people, no voiceover, no hands. Lens around 40mm, aperture f/4."
+    },
+    {
+      "id": "s16",
+      "name": "线缆入槽",
+      "start": 591,
+      "end": 655,
+      "description": "45 度固定机位，线缆滑进走线槽。",
+      "camera": {
+        "from": {
+          "position": [
+            1.434906488323254,
+            0.6993383453315135,
+            1.298406488323254
+          ],
+          "target": [
+            0.13893092202517468,
+            0.42261998120294514,
+            -0.014283881887758523
+          ],
+          "focalLength": 40,
+          "focusDistance": 1.865283283989953,
+          "aperture": 5.6
+        },
+        "to": {
+          "position": [
+            1.434906488323254,
+            0.6993383453315135,
+            1.298406488323254
+          ],
+          "target": [
+            0.13893092202517468,
+            0.42261998120294514,
+            -0.014283881887758523
+          ],
+          "focalLength": 40,
+          "focusDistance": 1.865283283989953,
+          "aperture": 5.6
+        },
+        "move": "static",
+        "easing": "linear"
+      },
+      "kind": "3d",
+      "sequenceId": "motion",
+      "intent": {
+        "role": "action",
+        "beats": 8,
+        "move": "locked",
+        "composition": "angle45",
+        "subject": "motion",
+        "focal": 40,
+        "fill": 0.5
+      },
+      "videoPrompt": "Photoreal product commercial, 2.67s, 24fps, 16:9. Pure black studio, thin rim light on the metal, soft contact shadow, faint floor reflection. Subject: a six-axis AI monitor arm on a desk, matte metal segments, a 27-inch display. Locked-off camera, composition angle45. The product moves; the camera does not. Base and pivots stay inside the frame. Action: 45 度固定机位，线缆滑进走线槽。 No people, no voiceover, no hands. Lens around 40mm, aperture f/5.6."
+    },
+    {
+      "id": "s17",
+      "name": "一根线",
+      "start": 655,
+      "end": 671,
+      "description": "参数字 ONE CABLE。",
+      "camera": {
+        "from": {
+          "position": [
+            1.1,
+            0.7,
+            1.4
+          ],
+          "target": [
+            0.12,
+            0.4,
+            0
+          ],
+          "focalLength": 40,
+          "focusDistance": 2,
+          "aperture": 4
+        },
+        "to": {
+          "position": [
+            1.2,
+            0.72,
+            1.5
+          ],
+          "target": [
+            0.12,
+            0.4,
+            0
+          ],
+          "focalLength": 40,
+          "focusDistance": 2,
+          "aperture": 4
+        },
+        "move": "static",
+        "easing": "linear"
+      },
+      "kind": "broll-code",
+      "sequenceId": "motion",
+      "broll": {
+        "template": "spec",
+        "lines": [
+          "ONE",
+          "CABLE"
+        ]
+      },
+      "intent": {
+        "role": "text",
+        "beats": 2
+      },
+      "videoPrompt": "Photoreal product commercial, 0.67s, 24fps, 16:9. Pure black studio, thin rim light on the metal, soft contact shadow, faint floor reflection. Subject: a six-axis AI monitor arm on a desk, matte metal segments, a 27-inch display. static, composition centered. Full-frame kinetic type on black: \"ONE / CABLE\". No product, no people. No people, no voiceover, no hands. Lens around 40mm, aperture f/4."
+    },
+    {
+      "id": "s18",
+      "name": "点头",
+      "start": 671,
+      "end": 720,
+      "description": "侧面固定机位，屏幕轻轻点一下。",
+      "camera": {
+        "from": {
+          "position": [
+            0.27,
+            0.5790554019188799,
+            1.834306713488003
+          ],
+          "target": [
+            0.27,
+            0.5105413918541255,
+            0.00015569802731611244
+          ],
+          "focalLength": 50,
+          "focusDistance": 1.8354302267018001,
+          "aperture": 5.6
+        },
+        "to": {
+          "position": [
+            0.27,
+            0.5790554019188799,
+            1.834306713488003
+          ],
+          "target": [
+            0.27,
+            0.5105413918541255,
+            0.00015569802731611244
+          ],
+          "focalLength": 50,
+          "focusDistance": 1.8354302267018001,
+          "aperture": 5.6
+        },
+        "move": "static",
+        "easing": "linear"
+      },
+      "kind": "3d",
+      "sequenceId": "motion",
+      "intent": {
+        "role": "action",
+        "beats": 6,
+        "move": "locked",
+        "composition": "side",
+        "subject": "screen",
+        "focal": 50,
+        "fill": 0.5
+      },
+      "videoPrompt": "Photoreal product commercial, 2.04s, 24fps, 16:9. Pure black studio, thin rim light on the metal, soft contact shadow, faint floor reflection. Subject: a six-axis AI monitor arm on a desk, matte metal segments, a 27-inch display. Locked-off camera, composition side. The product moves; the camera does not. Base and pivots stay inside the frame. Action: 侧面固定机位，屏幕轻轻点一下。 No people, no voiceover, no hands. Lens around 50mm, aperture f/5.6."
+    },
+    {
+      "id": "s19",
+      "name": "近",
+      "start": 720,
+      "end": 724,
+      "description": "高潮字卡。",
+      "camera": {
+        "from": {
+          "position": [
+            1.1,
+            0.7,
+            1.4
+          ],
+          "target": [
+            0.12,
+            0.4,
+            0
+          ],
+          "focalLength": 40,
+          "focusDistance": 2,
+          "aperture": 4
+        },
+        "to": {
+          "position": [
+            1.2,
+            0.72,
+            1.5
+          ],
+          "target": [
+            0.12,
+            0.4,
+            0
+          ],
+          "focalLength": 40,
+          "focusDistance": 2,
+          "aperture": 4
+        },
+        "move": "static",
+        "easing": "linear"
+      },
+      "kind": "broll-code",
+      "sequenceId": "climax",
+      "broll": {
+        "template": "kinetic",
+        "lines": [
+          "NEAR"
+        ]
+      },
+      "intent": {
+        "role": "climax",
+        "beats": 0.5
+      },
+      "videoPrompt": "Photoreal product commercial, 0.17s, 24fps, 16:9. Pure black studio, thin rim light on the metal, soft contact shadow, faint floor reflection. Subject: a six-axis AI monitor arm on a desk, matte metal segments, a 27-inch display. static, composition centered. Full-frame kinetic type on black: \"NEAR\". No product, no people. No people, no voiceover, no hands. Lens around 40mm, aperture f/4."
+    },
+    {
+      "id": "s20",
+      "name": "斜侧闪切",
+      "start": 724,
+      "end": 728,
+      "description": "固定斜侧，半拍。",
+      "camera": {
+        "from": {
+          "position": [
+            0.8641636227100763,
+            0.5570156170929353,
+            0.7276636227100763
+          ],
+          "target": [
+            0.174675422543565,
+            0.38574813621468124,
+            -0.031210200471081875
+          ],
+          "focalLength": 35,
+          "focusDistance": 1.0395268191272535,
+          "aperture": 5.6
+        },
+        "to": {
+          "position": [
+            0.8641636227100763,
+            0.5570156170929353,
+            0.7276636227100763
+          ],
+          "target": [
+            0.174675422543565,
+            0.38574813621468124,
+            -0.031210200471081875
+          ],
+          "focalLength": 35,
+          "focusDistance": 1.0395268191272535,
+          "aperture": 5.6
+        },
+        "move": "static",
+        "easing": "linear"
+      },
+      "kind": "3d",
+      "sequenceId": "climax",
+      "intent": {
+        "role": "climax",
+        "beats": 0.5,
+        "move": "locked",
+        "composition": "angle45",
+        "subject": "arm",
+        "focal": 35,
+        "fill": 0.7
+      },
+      "videoPrompt": "Photoreal product commercial, 0.17s, 24fps, 16:9. Pure black studio, thin rim light on the metal, soft contact shadow, faint floor reflection. Subject: a six-axis AI monitor arm on a desk, matte metal segments, a 27-inch display. Locked-off camera, composition angle45. The product moves; the camera does not. Base and pivots stay inside the frame. Action: 固定斜侧，半拍。 No people, no voiceover, no hands. Lens around 35mm, aperture f/5.6."
+    },
+    {
+      "id": "s21",
+      "name": "转",
+      "start": 728,
+      "end": 732,
+      "description": "高潮字卡。",
+      "camera": {
+        "from": {
+          "position": [
+            1.1,
+            0.7,
+            1.4
+          ],
+          "target": [
+            0.12,
+            0.4,
+            0
+          ],
+          "focalLength": 40,
+          "focusDistance": 2,
+          "aperture": 4
+        },
+        "to": {
+          "position": [
+            1.2,
+            0.72,
+            1.5
+          ],
+          "target": [
+            0.12,
+            0.4,
+            0
+          ],
+          "focalLength": 40,
+          "focusDistance": 2,
+          "aperture": 4
+        },
+        "move": "static",
+        "easing": "linear"
+      },
+      "kind": "broll-code",
+      "sequenceId": "climax",
+      "broll": {
+        "template": "kinetic",
+        "lines": [
+          "TURN"
+        ]
+      },
+      "intent": {
+        "role": "climax",
+        "beats": 0.5
+      },
+      "videoPrompt": "Photoreal product commercial, 0.17s, 24fps, 16:9. Pure black studio, thin rim light on the metal, soft contact shadow, faint floor reflection. Subject: a six-axis AI monitor arm on a desk, matte metal segments, a 27-inch display. static, composition centered. Full-frame kinetic type on black: \"TURN\". No product, no people. No people, no voiceover, no hands. Lens around 40mm, aperture f/4."
+    },
+    {
+      "id": "s22",
+      "name": "正面闪切",
+      "start": 732,
+      "end": 736,
+      "description": "固定正面，半拍。",
+      "camera": {
+        "from": {
+          "position": [
+            0.9394670018268028,
+            0.5500852788690185,
+            4.099303104609846e-17
+          ],
+          "target": [
+            0.2699161541479623,
+            0.5165998741634313,
+            -5.134077715990587e-21
+          ],
+          "focalLength": 50,
+          "focusDistance": 0.6703876564762741,
+          "aperture": 5.6
+        },
+        "to": {
+          "position": [
+            0.9394670018268028,
+            0.5500852788690185,
+            4.099303104609846e-17
+          ],
+          "target": [
+            0.2699161541479623,
+            0.5165998741634313,
+            -5.134077715990587e-21
+          ],
+          "focalLength": 50,
+          "focusDistance": 0.6703876564762741,
+          "aperture": 5.6
+        },
+        "move": "static",
+        "easing": "linear"
+      },
+      "kind": "3d",
+      "sequenceId": "climax",
+      "intent": {
+        "role": "climax",
+        "beats": 0.5,
+        "move": "locked",
+        "composition": "front",
+        "subject": "screen",
+        "focal": 50,
+        "fill": 0.72
+      },
+      "videoPrompt": "Photoreal product commercial, 0.17s, 24fps, 16:9. Pure black studio, thin rim light on the metal, soft contact shadow, faint floor reflection. Subject: a six-axis AI monitor arm on a desk, matte metal segments, a 27-inch display. Locked-off camera, composition front. The product moves; the camera does not. Base and pivots stay inside the frame. Action: 固定正面，半拍。 No people, no voiceover, no hands. Lens around 50mm, aperture f/5.6."
+    },
+    {
+      "id": "s23",
+      "name": "升",
+      "start": 736,
+      "end": 740,
+      "description": "高潮字卡。",
+      "camera": {
+        "from": {
+          "position": [
+            1.1,
+            0.7,
+            1.4
+          ],
+          "target": [
+            0.12,
+            0.4,
+            0
+          ],
+          "focalLength": 40,
+          "focusDistance": 2,
+          "aperture": 4
+        },
+        "to": {
+          "position": [
+            1.2,
+            0.72,
+            1.5
+          ],
+          "target": [
+            0.12,
+            0.4,
+            0
+          ],
+          "focalLength": 40,
+          "focusDistance": 2,
+          "aperture": 4
+        },
+        "move": "static",
+        "easing": "linear"
+      },
+      "kind": "broll-code",
+      "sequenceId": "climax",
+      "broll": {
+        "template": "kinetic",
+        "lines": [
+          "RISE"
+        ]
+      },
+      "intent": {
+        "role": "climax",
+        "beats": 0.5
+      },
+      "videoPrompt": "Photoreal product commercial, 0.17s, 24fps, 16:9. Pure black studio, thin rim light on the metal, soft contact shadow, faint floor reflection. Subject: a six-axis AI monitor arm on a desk, matte metal segments, a 27-inch display. static, composition centered. Full-frame kinetic type on black: \"RISE\". No product, no people. No people, no voiceover, no hands. Lens around 40mm, aperture f/4."
+    },
+    {
+      "id": "s24",
+      "name": "侧面闪切",
+      "start": 740,
+      "end": 744,
+      "description": "固定侧面，半拍。",
+      "camera": {
+        "from": {
+          "position": [
+            0.13650000000000004,
+            0.4172552996128778,
+            1.193925569788218
+          ],
+          "target": [
+            0.12252300047063464,
+            0.37397059000259936,
+            0.00004650967590862628
+          ],
+          "focalLength": 35,
+          "focusDistance": 1.1947452166786614,
+          "aperture": 5.6
+        },
+        "to": {
+          "position": [
+            0.13650000000000004,
+            0.4172552996128778,
+            1.193925569788218
+          ],
+          "target": [
+            0.12252300047063464,
+            0.37397059000259936,
+            0.00004650967590862628
+          ],
+          "focalLength": 35,
+          "focusDistance": 1.1947452166786614,
+          "aperture": 5.6
+        },
+        "move": "static",
+        "easing": "linear"
+      },
+      "kind": "3d",
+      "sequenceId": "climax",
+      "intent": {
+        "role": "climax",
+        "beats": 0.5,
+        "move": "locked",
+        "composition": "side",
+        "subject": "arm",
+        "focal": 35,
+        "fill": 0.66
+      },
+      "videoPrompt": "Photoreal product commercial, 0.17s, 24fps, 16:9. Pure black studio, thin rim light on the metal, soft contact shadow, faint floor reflection. Subject: a six-axis AI monitor arm on a desk, matte metal segments, a 27-inch display. Locked-off camera, composition side. The product moves; the camera does not. Base and pivots stay inside the frame. Action: 固定侧面，半拍。 No people, no voiceover, no hands. Lens around 35mm, aperture f/5.6."
+    },
+    {
+      "id": "s25",
+      "name": "现在",
+      "start": 744,
+      "end": 748,
+      "description": "高潮最后一个字。",
+      "camera": {
+        "from": {
+          "position": [
+            1.1,
+            0.7,
+            1.4
+          ],
+          "target": [
+            0.12,
+            0.4,
+            0
+          ],
+          "focalLength": 40,
+          "focusDistance": 2,
+          "aperture": 4
+        },
+        "to": {
+          "position": [
+            1.2,
+            0.72,
+            1.5
+          ],
+          "target": [
+            0.12,
+            0.4,
+            0
+          ],
+          "focalLength": 40,
+          "focusDistance": 2,
+          "aperture": 4
+        },
+        "move": "static",
+        "easing": "linear"
+      },
+      "kind": "broll-code",
+      "sequenceId": "climax",
+      "broll": {
+        "template": "kinetic",
+        "lines": [
+          "NOW"
+        ]
+      },
+      "intent": {
+        "role": "climax",
+        "beats": 0.5
+      },
+      "videoPrompt": "Photoreal product commercial, 0.17s, 24fps, 16:9. Pure black studio, thin rim light on the metal, soft contact shadow, faint floor reflection. Subject: a six-axis AI monitor arm on a desk, matte metal segments, a 27-inch display. static, composition centered. Full-frame kinetic type on black: \"NOW\". No product, no people. No people, no voiceover, no hands. Lens around 40mm, aperture f/4."
+    },
+    {
+      "id": "s26",
+      "name": "低机位闪切",
+      "start": 748,
+      "end": 752,
+      "description": "低机位固定，半拍。",
+      "camera": {
+        "from": {
+          "position": [
+            0.5502254036197174,
+            0.2326068195808575,
+            0.9292424708282496
+          ],
+          "target": [
+            0.12232929270682719,
+            0.3869097452269597,
+            0.008004752839318884
+          ],
+          "focalLength": 28,
+          "focusDistance": 1.0274158883542612,
+          "aperture": 5.6
+        },
+        "to": {
+          "position": [
+            0.5502254036197174,
+            0.2326068195808575,
+            0.9292424708282496
+          ],
+          "target": [
+            0.12232929270682719,
+            0.3869097452269597,
+            0.008004752839318884
+          ],
+          "focalLength": 28,
+          "focusDistance": 1.0274158883542612,
+          "aperture": 5.6
+        },
+        "move": "static",
+        "easing": "linear"
+      },
+      "kind": "3d",
+      "sequenceId": "climax",
+      "intent": {
+        "role": "climax",
+        "beats": 0.5,
+        "move": "locked",
+        "composition": "low",
+        "subject": "arm",
+        "focal": 28,
+        "fill": 0.68
+      },
+      "videoPrompt": "Photoreal product commercial, 0.17s, 24fps, 16:9. Pure black studio, thin rim light on the metal, soft contact shadow, faint floor reflection. Subject: a six-axis AI monitor arm on a desk, matte metal segments, a 27-inch display. Locked-off camera, composition low. The product moves; the camera does not. Base and pivots stay inside the frame. Action: 低机位固定，半拍。 No people, no voiceover, no hands. Lens around 28mm, aperture f/5.6."
+    },
+    {
+      "id": "s27",
+      "name": "英雄后拉",
+      "start": 752,
+      "end": 866,
+      "description": "整臂居中，再次匀速后拉，速度和前面的产品镜一样。",
+      "camera": {
+        "from": {
+          "position": [
+            1.141692999153686,
+            0.6421515309582883,
+            1.6086450648959751
+          ],
+          "target": [
+            0.1553661860273844,
+            0.36000452706384384,
+            -0.009210591888827172
+          ],
+          "focalLength": 55,
+          "focusDistance": 1.915699465022915,
+          "aperture": 4
+        },
+        "to": {
+          "position": [
+            1.3747771924101366,
+            0.7039682062278613,
+            1.98165774753795
+          ],
+          "target": [
+            0.15623145466798533,
+            0.3582753446833804,
+            -0.009464706941104305
+          ],
+          "focalLength": 55,
+          "focusDistance": 2.359857177505255,
+          "aperture": 4
+        },
+        "move": "linear",
+        "easing": "linear"
+      },
+      "kind": "3d",
+      "sequenceId": "end",
+      "screenContent": "CYBOPAL",
+      "intent": {
+        "role": "product",
+        "beats": 14,
+        "move": "slow-pull",
+        "composition": "centered",
+        "subject": "arm",
+        "focal": 55,
+        "fill": 0.56,
+        "pullSpeed": 0.1
+      },
+      "videoPrompt": "Photoreal product commercial, 4.75s, 24fps, 16:9. Pure black studio, thin rim light on the metal, soft contact shadow, faint floor reflection. Subject: a six-axis AI monitor arm on a desk, matte metal segments, a 27-inch display. Slow constant pull-back, same speed as the other product shots, composition centered. The product itself holds still. The arm holds its pose. No people, no voiceover, no hands. Lens around 55mm, aperture f/4."
+    },
+    {
+      "id": "s28",
+      "name": "标志",
+      "start": 866,
+      "end": 963,
+      "description": "logo 长停，让观众喘口气。",
+      "camera": {
+        "from": {
+          "position": [
+            1.1,
+            0.7,
+            1.4
+          ],
+          "target": [
+            0.12,
+            0.4,
+            0
+          ],
+          "focalLength": 40,
+          "focusDistance": 2,
+          "aperture": 4
+        },
+        "to": {
+          "position": [
+            1.2,
+            0.72,
+            1.5
+          ],
+          "target": [
+            0.12,
+            0.4,
+            0
+          ],
+          "focalLength": 40,
+          "focusDistance": 2,
+          "aperture": 4
+        },
+        "move": "static",
+        "easing": "linear"
+      },
+      "kind": "broll-code",
+      "sequenceId": "end",
+      "broll": {
+        "template": "logo",
+        "lines": [
+          "CYBOPAL",
+          "THE SCREEN THAT MOVES"
+        ]
+      },
+      "intent": {
+        "role": "logo",
+        "beats": 12
+      },
+      "videoPrompt": "Photoreal product commercial, 4.04s, 24fps, 16:9. Pure black studio, thin rim light on the metal, soft contact shadow, faint floor reflection. Subject: a six-axis AI monitor arm on a desk, matte metal segments, a 27-inch display. static, composition centered. Full-frame kinetic type on black: \"CYBOPAL / THE SCREEN THAT MOVES\". No product, no people. No people, no voiceover, no hands. Lens around 40mm, aperture f/4."
+    }
+  ],
+  "tracks": [
+    {
+      "id": "arm-joint-base_yaw",
+      "objectId": "arm",
+      "property": "joint:base_yaw",
+      "keys": [
+        {
+          "frame": 32,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 96,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 113,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 177,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 218,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 282,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 316,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 395,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 413,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 492,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 510,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 573,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 591,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 654,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 671,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 693,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 719,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 724,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 727,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 732,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 735,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 740,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 743,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 748,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 751,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 752,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 865,
+          "value": 0,
+          "easing": "smooth"
+        }
+      ]
+    },
+    {
+      "id": "arm-joint-seg1",
+      "objectId": "arm",
+      "property": "joint:seg1",
+      "keys": [
+        {
+          "frame": 32,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 96,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 113,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 177,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 218,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 282,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 316,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 395,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 413,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 492,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 510,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 573,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 591,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 654,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 671,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 693,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 719,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 724,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 727,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 732,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 735,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 740,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 743,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 748,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 751,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 752,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 865,
+          "value": 0,
+          "easing": "smooth"
+        }
+      ]
+    },
+    {
+      "id": "arm-joint-seg2",
+      "objectId": "arm",
+      "property": "joint:seg2",
+      "keys": [
+        {
+          "frame": 32,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 96,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 113,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 177,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 218,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 282,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 316,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 395,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 413,
+          "value": -42,
+          "easing": "smooth"
+        },
+        {
+          "frame": 492,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 510,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 573,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 591,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 654,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 671,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 693,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 719,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 724,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 727,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 732,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 735,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 740,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 743,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 748,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 751,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 752,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 865,
+          "value": 0,
+          "easing": "smooth"
+        }
+      ]
+    },
+    {
+      "id": "arm-joint-seg3",
+      "objectId": "arm",
+      "property": "joint:seg3",
+      "keys": [
+        {
+          "frame": 32,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 96,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 113,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 177,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 218,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 282,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 316,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 395,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 413,
+          "value": 48,
+          "easing": "smooth"
+        },
+        {
+          "frame": 492,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 510,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 573,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 591,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 654,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 671,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 693,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 719,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 724,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 727,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 732,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 735,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 740,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 743,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 748,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 751,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 752,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 865,
+          "value": 0,
+          "easing": "smooth"
+        }
+      ]
+    },
+    {
+      "id": "arm-joint-seg4",
+      "objectId": "arm",
+      "property": "joint:seg4",
+      "keys": [
+        {
+          "frame": 32,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 96,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 113,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 177,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 218,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 282,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 316,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 395,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 413,
+          "value": -10,
+          "easing": "smooth"
+        },
+        {
+          "frame": 492,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 510,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 573,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 591,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 654,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 671,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 693,
+          "value": 14,
+          "easing": "smooth"
+        },
+        {
+          "frame": 719,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 724,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 727,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 732,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 735,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 740,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 743,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 748,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 751,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 752,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 865,
+          "value": 0,
+          "easing": "smooth"
+        }
+      ]
+    },
+    {
+      "id": "arm-joint-portrait",
+      "objectId": "arm",
+      "property": "joint:portrait",
+      "keys": [
+        {
+          "frame": 32,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 96,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 113,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 177,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 218,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 282,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 316,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 395,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 413,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 492,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 510,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 573,
+          "value": 90,
+          "easing": "smooth"
+        },
+        {
+          "frame": 591,
+          "value": 90,
+          "easing": "smooth"
+        },
+        {
+          "frame": 654,
+          "value": 90,
+          "easing": "smooth"
+        },
+        {
+          "frame": 671,
+          "value": 90,
+          "easing": "smooth"
+        },
+        {
+          "frame": 693,
+          "value": 90,
+          "easing": "smooth"
+        },
+        {
+          "frame": 719,
+          "value": 90,
+          "easing": "smooth"
+        },
+        {
+          "frame": 724,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 727,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 732,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 735,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 740,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 743,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 748,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 751,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 752,
+          "value": 0,
+          "easing": "smooth"
+        },
+        {
+          "frame": 865,
+          "value": 0,
+          "easing": "smooth"
+        }
+      ]
+    },
+    {
+      "id": "cable-position",
+      "objectId": "cable",
+      "property": "position",
+      "keys": [
+        {
+          "frame": 591,
+          "value": [
+            0.18,
+            0.05,
+            0.09
+          ],
+          "easing": "smooth"
+        },
+        {
+          "frame": 654,
+          "value": [
+            0.055,
+            0.036,
+            0.05
+          ],
+          "easing": "smooth"
+        }
+      ]
+    },
+    {
+      "id": "panel-screen",
+      "objectId": "panel",
+      "property": "screen",
+      "keys": [
+        {
+          "frame": 0,
+          "value": "CYBOPAL"
+        }
+      ]
+    }
+  ],
+  "film": {
+    "id": "film-main",
+    "title": "CYBOPAL",
+    "style": "brand",
+    "look": "studio-black",
+    "logline": "没有旁白，没有人。黑场里一条会自己动的显示器臂，用匀速后拉和大字把六轴讲完。",
+    "bpm": 178,
+    "grade": true
+  },
+  "audio": {
+    "assetId": "bed",
+    "startFrame": 0,
+    "trimStart": 0,
+    "gain": 0.9
+  },
+  "createdAt": "2026-11-12T00:00:00.000Z",
+  "updatedAt": "2026-11-12T00:00:00.000Z",
+  "sequences": [
+    {
+      "id": "teaser",
+      "name": "吊胃口",
+      "start": 0,
+      "end": 194,
+      "summary": "只给关节和字，不给整条手臂。",
+      "role": "teaser"
+    },
+    {
+      "id": "tech",
+      "name": "技术",
+      "start": 194,
+      "end": 316,
+      "summary": "底座、结构和一句语音指令。",
+      "role": "tech"
+    },
+    {
+      "id": "reveal",
+      "name": "亮相",
+      "start": 316,
+      "end": 413,
+      "summary": "第一次看见整条手臂。",
+      "role": "reveal"
+    },
+    {
+      "id": "motion",
+      "name": "动作",
+      "start": 413,
+      "end": 720,
+      "summary": "产品在动的时候，机位锁死。",
+      "role": "motion"
+    },
+    {
+      "id": "climax",
+      "name": "高潮",
+      "start": 720,
+      "end": 752,
+      "summary": "半拍一刀。",
+      "role": "climax"
+    },
+    {
+      "id": "end",
+      "name": "收尾",
+      "start": 752,
+      "end": 963,
+      "summary": "长一点的英雄镜头，然后把 logo 停住。",
+      "role": "end"
+    }
+  ]
+}

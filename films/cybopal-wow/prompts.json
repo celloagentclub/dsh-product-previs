@@ -1,0 +1,198 @@
+[
+  {
+    "id": "s01",
+    "name": "字标",
+    "kind": "broll-code",
+    "seconds": 1.3333333333333333,
+    "prompt": "Photoreal product commercial, 1.33s, 24fps, 16:9. Pure black studio, thin rim light on the metal, soft contact shadow, faint floor reflection. Subject: a six-axis AI monitor arm on a desk, matte metal segments, a 27-inch display. static, composition centered. Full-frame kinetic type on black: \"CYBOPAL\". No product, no people. No people, no voiceover, no hands. Lens around 40mm, aperture f/4."
+  },
+  {
+    "id": "s02",
+    "name": "肩关节微距",
+    "kind": "3d",
+    "seconds": 2.7083333333333335,
+    "prompt": "Photoreal product commercial, 2.71s, 24fps, 16:9. Pure black studio, thin rim light on the metal, soft contact shadow, faint floor reflection. Subject: a six-axis AI monitor arm on a desk, matte metal segments, a 27-inch display. Slow constant pull-back, same speed as the other product shots, composition macro. The product itself holds still. The arm holds its pose. No people, no voiceover, no hands. Lens around 85mm, aperture f/2.8."
+  },
+  {
+    "id": "s03",
+    "name": "六轴",
+    "kind": "broll-code",
+    "seconds": 0.6666666666666666,
+    "prompt": "Photoreal product commercial, 0.67s, 24fps, 16:9. Pure black studio, thin rim light on the metal, soft contact shadow, faint floor reflection. Subject: a six-axis AI monitor arm on a desk, matte metal segments, a 27-inch display. static, composition centered. Full-frame kinetic type on black: \"SIX AXIS\". No product, no people. No people, no voiceover, no hands. Lens around 40mm, aperture f/4."
+  },
+  {
+    "id": "s04",
+    "name": "肘关节微距",
+    "kind": "3d",
+    "seconds": 2.7083333333333335,
+    "prompt": "Photoreal product commercial, 2.71s, 24fps, 16:9. Pure black studio, thin rim light on the metal, soft contact shadow, faint floor reflection. Subject: a six-axis AI monitor arm on a desk, matte metal segments, a 27-inch display. Slow constant pull-back, same speed as the other product shots, composition macro. The product itself holds still. The arm holds its pose. No people, no voiceover, no hands. Lens around 85mm, aperture f/2.8."
+  },
+  {
+    "id": "s05",
+    "name": "它会动",
+    "kind": "broll-code",
+    "seconds": 0.6666666666666666,
+    "prompt": "Photoreal product commercial, 0.67s, 24fps, 16:9. Pure black studio, thin rim light on the metal, soft contact shadow, faint floor reflection. Subject: a six-axis AI monitor arm on a desk, matte metal segments, a 27-inch display. static, composition centered. Full-frame kinetic type on black: \"IT MOVES\". No product, no people. No people, no voiceover, no hands. Lens around 40mm, aperture f/4."
+  },
+  {
+    "id": "s06",
+    "name": "AI 底座",
+    "kind": "broll-code",
+    "seconds": 1,
+    "prompt": "Photoreal product commercial, 1.00s, 24fps, 16:9. Pure black studio, thin rim light on the metal, soft contact shadow, faint floor reflection. Subject: a six-axis AI monitor arm on a desk, matte metal segments, a 27-inch display. static, composition centered. Full-frame kinetic type on black: \"AI / BASE\". No product, no people. No people, no voiceover, no hands. Lens around 40mm, aperture f/4."
+  },
+  {
+    "id": "s07",
+    "name": "底座微距",
+    "kind": "3d",
+    "seconds": 2.7083333333333335,
+    "prompt": "Photoreal product commercial, 2.71s, 24fps, 16:9. Pure black studio, thin rim light on the metal, soft contact shadow, faint floor reflection. Subject: a six-axis AI monitor arm on a desk, matte metal segments, a 27-inch display. Slow constant pull-back, same speed as the other product shots, composition macro. The product itself holds still. The arm holds its pose. No people, no voiceover, no hands. Lens around 70mm, aperture f/2.8."
+  },
+  {
+    "id": "s08",
+    "name": "结构",
+    "kind": "broll-code",
+    "seconds": 0.6666666666666666,
+    "prompt": "Photoreal product commercial, 0.67s, 24fps, 16:9. Pure black studio, thin rim light on the metal, soft contact shadow, faint floor reflection. Subject: a six-axis AI monitor arm on a desk, matte metal segments, a 27-inch display. static, composition centered. Full-frame kinetic type on black: \"YAW / PITCH / ELBOW / WRIST / ROLL\". No product, no people. No people, no voiceover, no hands. Lens around 40mm, aperture f/4."
+  },
+  {
+    "id": "s09",
+    "name": "语音指令",
+    "kind": "broll-code",
+    "seconds": 0.7083333333333334,
+    "prompt": "Photoreal product commercial, 0.71s, 24fps, 16:9. Pure black studio, thin rim light on the metal, soft contact shadow, faint floor reflection. Subject: a six-axis AI monitor arm on a desk, matte metal segments, a 27-inch display. static, composition centered. Full-frame kinetic type on black: \"转到竖屏 / VOICE · GESTURE\". No product, no people. No people, no voiceover, no hands. Lens around 40mm, aperture f/4."
+  },
+  {
+    "id": "s10",
+    "name": "整臂后拉",
+    "kind": "3d",
+    "seconds": 3.3333333333333335,
+    "prompt": "Photoreal product commercial, 3.33s, 24fps, 16:9. Pure black studio, thin rim light on the metal, soft contact shadow, faint floor reflection. Subject: a six-axis AI monitor arm on a desk, matte metal segments, a 27-inch display. Slow constant pull-back, same speed as the other product shots, composition centered. The product itself holds still. The arm holds its pose. No people, no voiceover, no hands. Lens around 50mm, aperture f/4."
+  },
+  {
+    "id": "s11",
+    "name": "手臂",
+    "kind": "broll-code",
+    "seconds": 0.7083333333333334,
+    "prompt": "Photoreal product commercial, 0.71s, 24fps, 16:9. Pure black studio, thin rim light on the metal, soft contact shadow, faint floor reflection. Subject: a six-axis AI monitor arm on a desk, matte metal segments, a 27-inch display. static, composition centered. Full-frame kinetic type on black: \"THE ARM\". No product, no people. No people, no voiceover, no hands. Lens around 40mm, aperture f/4."
+  },
+  {
+    "id": "s12",
+    "name": "展开",
+    "kind": "3d",
+    "seconds": 3.3333333333333335,
+    "prompt": "Photoreal product commercial, 3.33s, 24fps, 16:9. Pure black studio, thin rim light on the metal, soft contact shadow, faint floor reflection. Subject: a six-axis AI monitor arm on a desk, matte metal segments, a 27-inch display. Locked-off camera, composition side. The product moves; the camera does not. Base and pivots stay inside the frame. Action: 正侧面固定机位，手臂从收拢滑到展开，底座和转轴都在画里。 No people, no voiceover, no hands. Lens around 40mm, aperture f/5.6."
+  },
+  {
+    "id": "s13",
+    "name": "展开字卡",
+    "kind": "broll-code",
+    "seconds": 0.7083333333333334,
+    "prompt": "Photoreal product commercial, 0.71s, 24fps, 16:9. Pure black studio, thin rim light on the metal, soft contact shadow, faint floor reflection. Subject: a six-axis AI monitor arm on a desk, matte metal segments, a 27-inch display. static, composition centered. Full-frame kinetic type on black: \"UNFOLD\". No product, no people. No people, no voiceover, no hands. Lens around 40mm, aperture f/4."
+  },
+  {
+    "id": "s14",
+    "name": "转竖屏",
+    "kind": "3d",
+    "seconds": 2.6666666666666665,
+    "prompt": "Photoreal product commercial, 2.67s, 24fps, 16:9. Pure black studio, thin rim light on the metal, soft contact shadow, faint floor reflection. Subject: a six-axis AI monitor arm on a desk, matte metal segments, a 27-inch display. Locked-off camera, composition front. The product moves; the camera does not. Base and pivots stay inside the frame. Action: 正面固定机位，屏幕自己转到竖屏。 No people, no voiceover, no hands. Lens around 45mm, aperture f/5.6."
+  },
+  {
+    "id": "s15",
+    "name": "竖屏字卡",
+    "kind": "broll-code",
+    "seconds": 0.7083333333333334,
+    "prompt": "Photoreal product commercial, 0.71s, 24fps, 16:9. Pure black studio, thin rim light on the metal, soft contact shadow, faint floor reflection. Subject: a six-axis AI monitor arm on a desk, matte metal segments, a 27-inch display. static, composition centered. Full-frame kinetic type on black: \"PORTRAIT\". No product, no people. No people, no voiceover, no hands. Lens around 40mm, aperture f/4."
+  },
+  {
+    "id": "s16",
+    "name": "线缆入槽",
+    "kind": "3d",
+    "seconds": 2.6666666666666665,
+    "prompt": "Photoreal product commercial, 2.67s, 24fps, 16:9. Pure black studio, thin rim light on the metal, soft contact shadow, faint floor reflection. Subject: a six-axis AI monitor arm on a desk, matte metal segments, a 27-inch display. Locked-off camera, composition angle45. The product moves; the camera does not. Base and pivots stay inside the frame. Action: 45 度固定机位，线缆滑进走线槽。 No people, no voiceover, no hands. Lens around 40mm, aperture f/5.6."
+  },
+  {
+    "id": "s17",
+    "name": "一根线",
+    "kind": "broll-code",
+    "seconds": 0.6666666666666666,
+    "prompt": "Photoreal product commercial, 0.67s, 24fps, 16:9. Pure black studio, thin rim light on the metal, soft contact shadow, faint floor reflection. Subject: a six-axis AI monitor arm on a desk, matte metal segments, a 27-inch display. static, composition centered. Full-frame kinetic type on black: \"ONE / CABLE\". No product, no people. No people, no voiceover, no hands. Lens around 40mm, aperture f/4."
+  },
+  {
+    "id": "s18",
+    "name": "点头",
+    "kind": "3d",
+    "seconds": 2.0416666666666665,
+    "prompt": "Photoreal product commercial, 2.04s, 24fps, 16:9. Pure black studio, thin rim light on the metal, soft contact shadow, faint floor reflection. Subject: a six-axis AI monitor arm on a desk, matte metal segments, a 27-inch display. Locked-off camera, composition side. The product moves; the camera does not. Base and pivots stay inside the frame. Action: 侧面固定机位，屏幕轻轻点一下。 No people, no voiceover, no hands. Lens around 50mm, aperture f/5.6."
+  },
+  {
+    "id": "s19",
+    "name": "近",
+    "kind": "broll-code",
+    "seconds": 0.16666666666666666,
+    "prompt": "Photoreal product commercial, 0.17s, 24fps, 16:9. Pure black studio, thin rim light on the metal, soft contact shadow, faint floor reflection. Subject: a six-axis AI monitor arm on a desk, matte metal segments, a 27-inch display. static, composition centered. Full-frame kinetic type on black: \"NEAR\". No product, no people. No people, no voiceover, no hands. Lens around 40mm, aperture f/4."
+  },
+  {
+    "id": "s20",
+    "name": "斜侧闪切",
+    "kind": "3d",
+    "seconds": 0.16666666666666666,
+    "prompt": "Photoreal product commercial, 0.17s, 24fps, 16:9. Pure black studio, thin rim light on the metal, soft contact shadow, faint floor reflection. Subject: a six-axis AI monitor arm on a desk, matte metal segments, a 27-inch display. Locked-off camera, composition angle45. The product moves; the camera does not. Base and pivots stay inside the frame. Action: 固定斜侧，半拍。 No people, no voiceover, no hands. Lens around 35mm, aperture f/5.6."
+  },
+  {
+    "id": "s21",
+    "name": "转",
+    "kind": "broll-code",
+    "seconds": 0.16666666666666666,
+    "prompt": "Photoreal product commercial, 0.17s, 24fps, 16:9. Pure black studio, thin rim light on the metal, soft contact shadow, faint floor reflection. Subject: a six-axis AI monitor arm on a desk, matte metal segments, a 27-inch display. static, composition centered. Full-frame kinetic type on black: \"TURN\". No product, no people. No people, no voiceover, no hands. Lens around 40mm, aperture f/4."
+  },
+  {
+    "id": "s22",
+    "name": "正面闪切",
+    "kind": "3d",
+    "seconds": 0.16666666666666666,
+    "prompt": "Photoreal product commercial, 0.17s, 24fps, 16:9. Pure black studio, thin rim light on the metal, soft contact shadow, faint floor reflection. Subject: a six-axis AI monitor arm on a desk, matte metal segments, a 27-inch display. Locked-off camera, composition front. The product moves; the camera does not. Base and pivots stay inside the frame. Action: 固定正面，半拍。 No people, no voiceover, no hands. Lens around 50mm, aperture f/5.6."
+  },
+  {
+    "id": "s23",
+    "name": "升",
+    "kind": "broll-code",
+    "seconds": 0.16666666666666666,
+    "prompt": "Photoreal product commercial, 0.17s, 24fps, 16:9. Pure black studio, thin rim light on the metal, soft contact shadow, faint floor reflection. Subject: a six-axis AI monitor arm on a desk, matte metal segments, a 27-inch display. static, composition centered. Full-frame kinetic type on black: \"RISE\". No product, no people. No people, no voiceover, no hands. Lens around 40mm, aperture f/4."
+  },
+  {
+    "id": "s24",
+    "name": "侧面闪切",
+    "kind": "3d",
+    "seconds": 0.16666666666666666,
+    "prompt": "Photoreal product commercial, 0.17s, 24fps, 16:9. Pure black studio, thin rim light on the metal, soft contact shadow, faint floor reflection. Subject: a six-axis AI monitor arm on a desk, matte metal segments, a 27-inch display. Locked-off camera, composition side. The product moves; the camera does not. Base and pivots stay inside the frame. Action: 固定侧面，半拍。 No people, no voiceover, no hands. Lens around 35mm, aperture f/5.6."
+  },
+  {
+    "id": "s25",
+    "name": "现在",
+    "kind": "broll-code",
+    "seconds": 0.16666666666666666,
+    "prompt": "Photoreal product commercial, 0.17s, 24fps, 16:9. Pure black studio, thin rim light on the metal, soft contact shadow, faint floor reflection. Subject: a six-axis AI monitor arm on a desk, matte metal segments, a 27-inch display. static, composition centered. Full-frame kinetic type on black: \"NOW\". No product, no people. No people, no voiceover, no hands. Lens around 40mm, aperture f/4."
+  },
+  {
+    "id": "s26",
+    "name": "低机位闪切",
+    "kind": "3d",
+    "seconds": 0.16666666666666666,
+    "prompt": "Photoreal product commercial, 0.17s, 24fps, 16:9. Pure black studio, thin rim light on the metal, soft contact shadow, faint floor reflection. Subject: a six-axis AI monitor arm on a desk, matte metal segments, a 27-inch display. Locked-off camera, composition low. The product moves; the camera does not. Base and pivots stay inside the frame. Action: 低机位固定，半拍。 No people, no voiceover, no hands. Lens around 28mm, aperture f/5.6."
+  },
+  {
+    "id": "s27",
+    "name": "英雄后拉",
+    "kind": "3d",
+    "seconds": 4.75,
+    "prompt": "Photoreal product commercial, 4.75s, 24fps, 16:9. Pure black studio, thin rim light on the metal, soft contact shadow, faint floor reflection. Subject: a six-axis AI monitor arm on a desk, matte metal segments, a 27-inch display. Slow constant pull-back, same speed as the other product shots, composition centered. The product itself holds still. The arm holds its pose. No people, no voiceover, no hands. Lens around 55mm, aperture f/4."
+  },
+  {
+    "id": "s28",
+    "name": "标志",
+    "kind": "broll-code",
+    "seconds": 4.041666666666667,
+    "prompt": "Photoreal product commercial, 4.04s, 24fps, 16:9. Pure black studio, thin rim light on the metal, soft contact shadow, faint floor reflection. Subject: a six-axis AI monitor arm on a desk, matte metal segments, a 27-inch display. static, composition centered. Full-frame kinetic type on black: \"CYBOPAL / THE SCREEN THAT MOVES\". No product, no people. No people, no voiceover, no hands. Lens around 40mm, aperture f/4."
+  }
+]

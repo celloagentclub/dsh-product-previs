@@ -1,110 +1,175 @@
 # 产品白模预演工作台
 
-一个跑在 [DeepSeek-Harness](https://github.com/deepseek-ai/deepseek-harness) 里的产品预演工作台：导入真实 GLB，用简化人偶和真实摄像机编排镜头，实时双视图预览，最后导出一部完整白模 MP4。
+给 CyboPal 这种 AI 显示器机械臂做拍前预演。一条时间线上有两种镜头：三维白模（three.js）和代码 B-roll（Remotion 排版、参数、界面、结构示意）。编辑器预览和导出共用同一个纯函数 `evaluateProject(project, frame)`。所有修改都走一份白名单命令，所以对话、Codex、DeepSeek 或任何 MCP 客户端改的是同一份数据，并且可以撤销。
 
-面向广告 / 产品片的拍前预演：先用低成本白模把**运镜、动作、节奏**定下来，再交给真人实拍或 AI 视频模型。
+样片 1 对标 [Mac Studio M5](https://www.youtube.com/watch?v=3uAIqqg8ZHo)：黑场、无旁白、178 BPM、大字和慢后拉。导演规则在 [`skills/director/SKILL.md`](skills/director/SKILL.md)。
 
-## 能做什么
+## 架构
 
-- **真实模型进来**：导入 GLB，自动剥出白模（去掉贴图、UV、复杂材质，保留部件层级、变换和米制尺度）。原始素材只读复制，不改源文件。
-- **产品动作**：分部件绑定关节（轴心、轴向、角度范围、父子链），做关节运动、整体位移、拆解与回装。
-- **人物**：分关节简化人偶，支持站 / 坐 / 走、转身、抬手、伸手，逐帧姿态混合。
-- **布景**：地面、方块、屏幕（可真实贴图 / 显示文字，可挂到产品部件上随动）、灯光。
-- **双视图**：左边是观察三维场景（不改变拍摄机位），右边是真实摄影机监看。焦段、景别、构图所见即所得。
-- **时间线**：绝对帧求值，关键帧可编辑曲线；撤销 / 重做持久化。
-- **导出**：Remotion 逐帧渲染，导出 MP4。
-
-## 核心设计
-
-**同一个求值核心**同时驱动编辑器预览和离线渲染。`evaluateProject(project, frame)` 是纯函数，给定项目和帧号返回该帧的完整状态（相机位姿、对象变换、每个产品部件的矩阵、人偶骨架、屏幕内容）。所以你在视口里看到的就是导出的画面，不存在"预览和成片不一致"。
-
-这也意味着**任意帧可随机访问**——拖动时间线、倒序定位、跳帧都不依赖播放历史。
-
-`src/core/types.ts` 是共享契约：米制单位、Y 轴向上、整数帧、镜头左闭右开 `[start, end)`。
-
-## 运镜求解
-
-运镜不是手写米数，而是按意图求解。在 `scripts/stage-shots.mjs` 里给每个镜头写：
-
-- `az` 水平方向角
-- `el` 俯角
-- `fill` 主体应占画面高度的比例（1 = 满幅）
-- `focal` 焦段
-
-求解器按真实投影算出机位和注视点，`npm run audit:camera` 再逐帧检查主体有没有出画。运镜求解器有 7 项单元测试（投影正确性、构图占比、距离单调性、指定屏幕落点、方位角、俯角、不可达拒绝）。
-
-```bash
-npm run stage:shots    # 按意图重算机位
-npm run audit:camera   # 逐帧检查是否有主体出画
+```
+简报
+  → 编剧 writeNarrative        故事、字幕、有没有旁白
+  → 导演 directShots           段落 → 镜头（3d | broll-code）
+  → 摄影 photograph            命名运镜 + 构图预设
+  → 剪辑 editRhythm            按 BPM 把切点放上节拍
+  → compileFilm                编译成白名单命令，applyCommands 写入项目
+  → 几何评分 + 最多两轮自动修正
+  → Remotion 合成 MP4、关键帧、分镜 HTML、逐镜视频提示词
 ```
 
-## 安装
+| 层 | 位置 | 做什么 |
+| --- | --- | --- |
+| 求值 | `src/core` | 绝对帧、关节矩阵、命令校验。schema 仍是 2，新字段都可选 |
+| 产品 | `src/product` | 底座 → 五段臂 → 支架 → 屏幕。模型里各段是平级的，链在代码里串。IK 和动作库 |
+| 机位 | `src/camera` | 原有意图求解，加上 slow-pull、locked、orbit、crane、macro、handheld、over-shoulder |
+| 声音 | `src/audio` | 178 BPM 占位律动、检拍、切点重排 |
+| 导演 | `src/director` | 四个角色、评分、自动修正 |
+| 模型 | `src/agent/models.ts` | `scripted`（默认）、`deepseek`、`codex` |
+| 接口 | `cli/main.ts` | 同一套命令的 CLI 和 MCP |
 
-作为 DSH 插件安装：
+手动拖动只留在原编辑器里，当作最后微调。样片不靠它。
+
+## 命令
 
 ```bash
-git clone <this-repo> dsh-product-previs
-# 在 DSH 插件管理器中安装该目录，或把路径加进 profile 的 dependencies
+npm run previs -- commands
+npm run previs -- direct --brief-file films/cybopal-wow/BRIEF.txt --out films/cybopal-wow
+npm run previs -- evaluate --project films/cybopal-wow/project.json --frame 120
+npm run previs -- apply --project films/cybopal-wow/project.json --commands batch.json
+npm run previs -- undo --project films/cybopal-wow/project.json
+npm run build          # 编辑器 + Remotion 场景。渲染前需要
+npm run previs -- render --project films/cybopal-wow/project.json --width 1280 --height 720
 ```
 
-安装不需要执行构建脚本——仓库里已带 `dist/`（编辑器页面）、`render-dist/`（Remotion 场景）和 `host/generated-core.mjs`（宿主用的求值核心）。这样安装器不会被 esbuild 之类的 postinstall 卡住。
+`batch.json` 是命令数组。白名单：
 
-> `dist/` 和 `render-dist/` 默认在 `.gitignore` 里。发包前需要先 `npm run build`，再强制添加：`git add -f dist render-dist host/generated-core.mjs`。
+`project.update` `asset.add` `object.add|update|remove` `rig.set` `shot.add|update|remove` `track.set|remove` `keyframe.set` `film.set` `sequence.add|update|remove` `audio.set` `arm.action` `camera.apply` `timeline.align`
+
+机械臂动作：`hold` `unfold` `fold` `rise` `lower` `follow-face` `portrait` `landscape` `nod` `cable-tuck`。
+
+`follow-face` 把屏幕送到人脸前，默认 0.6 米，并可同时转竖屏。
+
+运镜：`slow-pull` `slow-push` `locked` `orbit` `crane` `macro` `handheld` `over-shoulder`。构图：`centered` `macro` `side` `front` `angle45` `low` `top` `over-shoulder`。品牌片的慢后拉锁在 0.10 m/s。
+
+换模型（可选，失败会退回脚本导演）：
+
+```bash
+# DeepSeek：需要 DEEPSEEK_API_KEY
+npm run previs -- direct --model deepseek --brief "..." --out films/from-deepseek
+
+# Codex CLI：机器上要有 codex
+npm run previs -- direct --model codex --brief "..." --out films/from-codex
+```
+
+看图打分是可选的。不设置时用投影测量构图和主体大小。设置 `PREVIS_VISION_URL` 后，同一份分数会 POST 给那个服务再改回来。
+
+## MCP
+
+任何支持 stdio MCP 的客户端都可以接。服务名 `previs`，工具和 CLI 子命令一一对应：`previs_commands` `previs_direct` `previs_apply` `previs_evaluate` `previs_beats` `previs_align` `previs_storyboard` `previs_prompts` `previs_undo` `previs_redo`。
+
+```json
+{
+  "mcpServers": {
+    "previs": {
+      "command": "npm",
+      "args": ["run", "previs", "--silent", "--", "mcp"],
+      "cwd": "/绝对路径/dsh-product-previs"
+    }
+  }
+}
+```
+
+`previs_apply` 的 `commands` 就是上面的白名单。一次调用是一个撤销步，历史在 `project.json.history.json`（不进 git）。
+
+DeepSeek-Harness 里原来的 `previs_apply` 也认识这些新命令。
+
+## 换音乐
+
+样片的节奏按 Raf Riley x Avelino《WOW.》的大约 178 BPM。那首歌有版权，仓库里没有，也不要把它提交进来。现在用的是程序生成的 178 BPM 占位律动：`films/cybopal-wow/assets/bed.wav`，每拍一个底鼓，所以检拍能对上。
+
+换成你自己的文件（wav、mp3 都可以）时，这一条会转码、检拍、按每镜记下的拍数重排切点和动作、重写分镜，然后重新渲染：
+
+```bash
+npm run previs -- music:swap --project films/cybopal-wow/project.json --audio /path/to/track.wav --width 1280 --height 720
+```
+
+只重排、先不渲染：加上 `--no-render`。
+
+## 换产品模型
+
+源 GLB（KeyShot，约 148MB，毫米、根节点已缩放到米）不要提交。放到仓库外或这里：
+
+```bash
+mkdir -p models
+# 把文件放成 models/cybopal-arm.glb ，或 export PREVIS_ARM_GLB=/绝对路径
+npm run arm:calibrate
+```
+
+校准表是 `src/product/arm.calibration.json`。第一到第四段的铰链要对上 2mm 以内。各段在 GLB 里是平级节点，运动链是代码串起来的；转轴默认在节点原点，段 1–4 绕局部 Z，竖屏绕屏幕法线 +X。限位是预演默认值，直接改 JSON。
+
+渲染用的是这份表生成的白模，大约十几 KB：
+
+```bash
+npm run arm:white
+# 默认写到 assets/models/arm-white.glb
+```
+
+样片项目里的副本是 `films/cybopal-wow/assets/arm-white.glb`。重新 `direct` 会再复制一次。带贴图的精修预览还没接上这 148MB 文件，见文末。
+
+## 样片
+
+`films/cybopal-wow/`：
+
+- `BRIEF.txt` 简报
+- `project.json` 28 个镜头，约 40.1 秒，24fps，母版 1920×1080
+- `outline.json` `scores.json` 四个角色和几何评分
+- `storyboard.html` 分镜
+- `prompts.json` 给 Kling / Veo 的英文提示词
+- `assets/bed.wav` 占位律动
+- `output/sample.mp4` 已包含的 1280×720、40.2 秒成片（母版时间线仍是 1920×1080）
+- `output/frames/` 28 张镜头关键帧
+
+重新导出：
+
+```bash
+npm run build
+npm run previs -- render --project films/cybopal-wow/project.json --width 1280 --height 720
+```
+
+去掉 `--width/--height` 就按项目的 1920×1080 渲。`--no-grade` 关掉景深和辉光。`--frame 200` 只出一帧，用来看画面。
 
 ## 开发
 
 ```bash
 npm ci --ignore-scripts
-npm run build      # 编辑器 + Remotion 场景 + 宿主核心
-npm run check      # TypeScript
-npm test           # 核心求值 / 命令 / 校验（vitest）
-npm run test:host  # 宿主接口 + 浏览器半边 + 运镜求解
+npm test           # 求值、命令、IK、节拍、整片编译
+npm run test:host  # 宿主、浏览器半边、运镜求解
+npm run check
 ```
 
-测试共 42 项，分四组：
-
-- **核心 28 项**：绝对帧求值、关节矩阵与限位、拆解回装、相机轨迹与目标跟随、屏幕挂载、人物姿态混合、命令校验、版本冲突、持久撤销。其中一项用真实 GLB 做 fixture（720 帧逐帧求值 + 部件尺寸校验），需要 `PREVIS_FIXTURE=/path/to/project.json` 才运行。
-- **宿主 5 项**：原子修订锁、HTTP / Range、白模转换、渲染任务历史、素材目录授权。
-- **浏览器半边 2 项**：侧栏与主视图注册、缺少右侧栏注册表时优雅降级。
-- **运镜求解 7 项**。
+原来的 42 项还在：核心 28（其中 1 项要 `PREVIS_FIXTURE` 才跑真实 GLB）、宿主 5、浏览器半边 2、运镜求解 7。新增的是 IK、白名单命令、178 BPM 检拍和样片编译。
 
 ```bash
 PREVIS_FIXTURE=/path/to/project.json npm test
 ```
 
-## 目录
+## 原来的工作台
 
-```
-src/core/       共享类型、纯求值、命令与校验
-src/stage/      真实 GLB 部件、人偶骨架、屏幕、灯光、双视口
-src/editor/     场景树、属性面板、镜头、时间线、保存与 DSH 上下文
-src/render/     Remotion ThreeCanvas，复用同一 SceneContent 与相机函数
-host/           项目存储、素材处理、SSE、修订锁、DSH 工具、后台导出
-scripts/        构建、运镜求解、逐帧审计、交接包生成
+DSH 插件的编辑器还在：双视图、时间线、撤销、Remotion 导出。安装方式没变，项目仍可以放在 `~/Desktop/产品白模预演/<项目ID>/`。`dist/`、`render-dist/` 和 `host/generated-core.mjs` 需要构建后强制加入发布包。
+
+```bash
+npm run stage:shots
+npm run audit:camera
 ```
 
-## 项目数据
+米制、Y 向上、整数帧、镜头区间左闭右开。参考了 [StageFlow](https://github.com/taruma/stageflow) 的观察相机和拍摄相机分离，实现是重写的。见 [THIRD_PARTY_NOTICES.md](./THIRD_PARTY_NOTICES.md)。
 
-保存在 `~/Desktop/产品白模预演/<项目ID>/`：
+## 这一版还不稳的地方
 
-```
-project.json            assets / objects / shots / tracks 一份场景数据
-.history.json           每批修改的持久撤销重做历史
-assets/original/        原始素材只读副本
-assets/white/           生成的白模 GLB
-output/                 版本快照、导出任务记录、MP4
-```
-
-## 已知限制
-
-- 这是白模动作 / 运镜工具，不追求材质写实。
-- 人偶是分关节简化骨架，不是精细手指或面部动画，也没有物理接触仿真。
-- 屏幕支持图片和文字；视频素材目前显示文件名占位，不播放视频贴图。
-- 焦段真实影响构图；焦点和光圈有参数记录，但不做景深模糊。
-- GLB 导入保持单位与层级，拒绝缺外部资源或不支持的几何压缩（Draco / meshopt）。新产品关节需人工校准，不自动推断机械结构。
-
-## 许可
-
-MIT。参考了 [StageFlow](https://github.com/taruma/stageflow)（MIT）的观察相机 / 拍摄相机分离、绝对时间求值和空间编排思路；实现代码为重新编写。详见 [THIRD_PARTY_NOTICES.md](./THIRD_PARTY_NOTICES.md)。
-
-Remotion 按其自身许可使用。用户素材不属于本仓库。
+- 画面是按真实铰链尺寸做的白模，不是那份 148MB 贴图网格。微距能看出是简化圆柱。
+- 评分默认不看像素。`PREVIS_VISION_URL` 留好了，但没有默认的视觉模型。
+- 编辑器还是原来的布局，没有对话侧栏。这一轮先把管线跑通。
+- 景深和辉光走 postprocessing。软件渲染上如果某一帧失败，用 `--no-grade` 退回灯光和反射。
+- 关节限位是从模型推断的，需要你用校准表改成工程值。
+- 屏幕上的视频素材仍然只显示文件名。样片的屏幕内容是文字。
+- `scripted` 导演是确定性的，样片由它生成。Codex 和 DeepSeek 已接上，输出不是合法镜头 JSON 时会退回这套规则。

@@ -145,6 +145,16 @@ function finiteResult(value: unknown, path = 'frame'): void {
   else if (value && typeof value === 'object') Object.entries(value).forEach(([k, v]) => finiteResult(v, `${path}.${k}`));
 }
 
+/** The shot that owns this frame. Same left-closed/right-open rule as evaluateProject, including gap holds. */
+export function activeShot(project: PrevisProject, frame: number): Shot {
+  if (!project.shots.length) throw new Error('项目没有镜头；请先添加拍摄镜头再预览或导出');
+  if (!Number.isFinite(frame)) throw new Error('帧号必须是有限数值');
+  frame = clamp(frame, 0, Math.max(0, project.durationFrames - 1));
+  const shots = [...project.shots].sort((a, b) => a.start - b.start);
+  return shots.find(s => s.start <= frame && frame < s.end)
+    ?? [...shots].reverse().find(s => s.start <= frame) ?? shots[0];
+}
+
 /** Stateless absolute-frame evaluation, shared by the live stage and offline renderer. */
 export function evaluateProject(project: PrevisProject, frame: number): EvaluatedFrame {
   return evaluateProjectInternal(project, frame, true);
@@ -181,9 +191,7 @@ function evaluateProjectInternal(project: PrevisProject, frame: number, applyBin
   if (!project.shots.length) throw new Error('项目没有镜头；请先添加拍摄镜头再预览或导出');
   if (!Number.isFinite(project.durationFrames) || project.durationFrames < 1 || !Number.isFinite(project.fps) || project.fps <= 0) throw new Error('项目时长或帧率无效');
   frame = clamp(frame, 0, project.durationFrames - 1);
-  const shots = [...project.shots].sort((a, b) => a.start - b.start);
-  const shot = shots.find(s => s.start <= frame && frame < s.end)
-    ?? [...shots].reverse().find(s => s.start <= frame) ?? shots[0];
+  const shot = activeShot(project, frame);
   const objects: Record<string, EvaluatedObject> = Object.create(null);
   const trackMap = new Map<string, Map<string, Track>>();
   for (const track of project.tracks) {

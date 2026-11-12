@@ -1,0 +1,766 @@
+{
+  "outline": {
+    "narrative": {
+      "title": "CYBOPAL",
+      "style": "brand",
+      "look": "studio-black",
+      "logline": "没有旁白，没有人。黑场里一条会自己动的显示器臂，用匀速后拉和大字把六轴讲完。",
+      "bpm": 178,
+      "durationSec": 40,
+      "brief": "40秒品牌片，对标苹果 Mac Studio：纯黑背景、无旁白无人、电子乐 178 BPM、大字卡点。主角是 CyboPal AI 六轴显示器机械臂。开头只给关节微距，中段才露出整条手臂，静态镜头慢速匀速后拉，产品居中留黑。后段用固定机位拍展开、转竖屏、线缆收入走线槽、点头。高潮半拍快切，最后长停 logo。\n",
+      "vo": false
+    },
+    "shots": [
+      {
+        "sequence": "teaser",
+        "sequenceName": "吊胃口",
+        "summary": "只给关节和字，不给整条手臂。",
+        "name": "字标",
+        "description": "黑场大字 CYBOPAL，字几乎不动，像镜头还在慢慢后退。",
+        "kind": "broll-code",
+        "role": "text",
+        "beats": 4,
+        "template": "kinetic",
+        "lines": [
+          "CYBOPAL"
+        ],
+        "id": "s01"
+      },
+      {
+        "sequence": "teaser",
+        "sequenceName": "吊胃口",
+        "summary": "只给关节和字，不给整条手臂。",
+        "name": "肩关节微距",
+        "description": "肩轴微距，匀速后拉，轮廓光勾出转轴。",
+        "kind": "3d",
+        "role": "product",
+        "beats": 8,
+        "action": "hold",
+        "move": "slow-pull",
+        "composition": "macro",
+        "subject": "shoulder",
+        "focal": 85,
+        "fill": 0.7,
+        "id": "s02"
+      },
+      {
+        "sequence": "teaser",
+        "sequenceName": "吊胃口",
+        "summary": "只给关节和字，不给整条手臂。",
+        "name": "六轴",
+        "description": "半拍不到的字卡。",
+        "kind": "broll-code",
+        "role": "text",
+        "beats": 2,
+        "template": "kinetic",
+        "lines": [
+          "SIX AXIS"
+        ],
+        "id": "s03"
+      },
+      {
+        "sequence": "teaser",
+        "sequenceName": "吊胃口",
+        "summary": "只给关节和字，不给整条手臂。",
+        "name": "肘关节微距",
+        "description": "肘轴微距，后拉速度与上一镜相同。",
+        "kind": "3d",
+        "role": "product",
+        "beats": 8,
+        "action": "hold",
+        "move": "slow-pull",
+        "composition": "macro",
+        "subject": "elbow",
+        "focal": 85,
+        "fill": 0.68,
+        "id": "s04"
+      },
+      {
+        "sequence": "teaser",
+        "sequenceName": "吊胃口",
+        "summary": "只给关节和字，不给整条手臂。",
+        "name": "它会动",
+        "description": "短字卡，把动作承诺出去。",
+        "kind": "broll-code",
+        "role": "text",
+        "beats": 2,
+        "template": "kinetic",
+        "lines": [
+          "IT MOVES"
+        ],
+        "id": "s05"
+      },
+      {
+        "sequence": "tech",
+        "sequenceName": "技术",
+        "summary": "底座、结构和一句语音指令。",
+        "name": "AI 底座",
+        "description": "两行参数字。",
+        "kind": "broll-code",
+        "role": "text",
+        "beats": 3,
+        "template": "spec",
+        "lines": [
+          "AI",
+          "BASE"
+        ],
+        "id": "s06"
+      },
+      {
+        "sequence": "tech",
+        "sequenceName": "技术",
+        "summary": "底座、结构和一句语音指令。",
+        "name": "底座微距",
+        "description": "底座微距后拉，金属边缘吃到轮廓光。",
+        "kind": "3d",
+        "role": "product",
+        "beats": 8,
+        "action": "hold",
+        "move": "slow-pull",
+        "composition": "macro",
+        "subject": "base",
+        "focal": 70,
+        "fill": 0.62,
+        "id": "s07"
+      },
+      {
+        "sequence": "tech",
+        "sequenceName": "技术",
+        "summary": "底座、结构和一句语音指令。",
+        "name": "结构",
+        "description": "六段铰链的结构示意。",
+        "kind": "broll-code",
+        "role": "text",
+        "beats": 2,
+        "template": "diagram",
+        "lines": [
+          "YAW",
+          "PITCH",
+          "ELBOW",
+          "WRIST",
+          "ROLL"
+        ],
+        "id": "s08"
+      },
+      {
+        "sequence": "tech",
+        "sequenceName": "技术",
+        "summary": "底座、结构和一句语音指令。",
+        "name": "语音指令",
+        "description": "界面示意：一句话让屏幕转竖。",
+        "kind": "broll-code",
+        "role": "text",
+        "beats": 2,
+        "template": "ui",
+        "lines": [
+          "转到竖屏",
+          "VOICE · GESTURE"
+        ],
+        "id": "s09"
+      },
+      {
+        "sequence": "reveal",
+        "sequenceName": "亮相",
+        "summary": "第一次看见整条手臂。",
+        "name": "整臂后拉",
+        "description": "产品居中，四周留黑，匀速后拉，姿态不动。",
+        "kind": "3d",
+        "role": "product",
+        "beats": 10,
+        "action": "hold",
+        "move": "slow-pull",
+        "composition": "centered",
+        "subject": "arm",
+        "focal": 50,
+        "fill": 0.58,
+        "screenContent": "CYBOPAL",
+        "id": "s10"
+      },
+      {
+        "sequence": "reveal",
+        "sequenceName": "亮相",
+        "summary": "第一次看见整条手臂。",
+        "name": "手臂",
+        "description": "大字 THE ARM。",
+        "kind": "broll-code",
+        "role": "text",
+        "beats": 2,
+        "template": "kinetic",
+        "lines": [
+          "THE ARM"
+        ],
+        "id": "s11"
+      },
+      {
+        "sequence": "motion",
+        "sequenceName": "动作",
+        "summary": "产品在动的时候，机位锁死。",
+        "name": "展开",
+        "description": "正侧面固定机位，手臂从收拢滑到展开，底座和转轴都在画里。",
+        "kind": "3d",
+        "role": "action",
+        "beats": 10,
+        "action": "unfold",
+        "move": "locked",
+        "composition": "side",
+        "subject": "motion",
+        "focal": 40,
+        "fill": 0.48,
+        "id": "s12"
+      },
+      {
+        "sequence": "motion",
+        "sequenceName": "动作",
+        "summary": "产品在动的时候，机位锁死。",
+        "name": "展开字卡",
+        "description": "动作之后的一个短字。",
+        "kind": "broll-code",
+        "role": "text",
+        "beats": 2,
+        "template": "kinetic",
+        "lines": [
+          "UNFOLD"
+        ],
+        "id": "s13"
+      },
+      {
+        "sequence": "motion",
+        "sequenceName": "动作",
+        "summary": "产品在动的时候，机位锁死。",
+        "name": "转竖屏",
+        "description": "正面固定机位，屏幕自己转到竖屏。",
+        "kind": "3d",
+        "role": "action",
+        "beats": 8,
+        "action": "portrait",
+        "move": "locked",
+        "composition": "front",
+        "subject": "motion",
+        "focal": 45,
+        "fill": 0.55,
+        "screenContent": "PORTRAIT",
+        "id": "s14"
+      },
+      {
+        "sequence": "motion",
+        "sequenceName": "动作",
+        "summary": "产品在动的时候，机位锁死。",
+        "name": "竖屏字卡",
+        "description": "短字 PORTRAIT。",
+        "kind": "broll-code",
+        "role": "text",
+        "beats": 2,
+        "template": "kinetic",
+        "lines": [
+          "PORTRAIT"
+        ],
+        "id": "s15"
+      },
+      {
+        "sequence": "motion",
+        "sequenceName": "动作",
+        "summary": "产品在动的时候，机位锁死。",
+        "name": "线缆入槽",
+        "description": "45 度固定机位，线缆滑进走线槽。",
+        "kind": "3d",
+        "role": "action",
+        "beats": 8,
+        "action": "cable-tuck",
+        "move": "locked",
+        "composition": "angle45",
+        "subject": "motion",
+        "focal": 40,
+        "fill": 0.5,
+        "id": "s16"
+      },
+      {
+        "sequence": "motion",
+        "sequenceName": "动作",
+        "summary": "产品在动的时候，机位锁死。",
+        "name": "一根线",
+        "description": "参数字 ONE CABLE。",
+        "kind": "broll-code",
+        "role": "text",
+        "beats": 2,
+        "template": "spec",
+        "lines": [
+          "ONE",
+          "CABLE"
+        ],
+        "id": "s17"
+      },
+      {
+        "sequence": "motion",
+        "sequenceName": "动作",
+        "summary": "产品在动的时候，机位锁死。",
+        "name": "点头",
+        "description": "侧面固定机位，屏幕轻轻点一下。",
+        "kind": "3d",
+        "role": "action",
+        "beats": 6,
+        "action": "nod",
+        "move": "locked",
+        "composition": "side",
+        "subject": "screen",
+        "focal": 50,
+        "fill": 0.5,
+        "id": "s18"
+      },
+      {
+        "sequence": "climax",
+        "sequenceName": "高潮",
+        "summary": "半拍一刀。",
+        "name": "近",
+        "description": "高潮字卡。",
+        "kind": "broll-code",
+        "role": "climax",
+        "beats": 0.5,
+        "template": "kinetic",
+        "lines": [
+          "NEAR"
+        ],
+        "id": "s19"
+      },
+      {
+        "sequence": "climax",
+        "sequenceName": "高潮",
+        "summary": "半拍一刀。",
+        "name": "斜侧闪切",
+        "description": "固定斜侧，半拍。",
+        "kind": "3d",
+        "role": "climax",
+        "beats": 0.5,
+        "action": "hold",
+        "move": "locked",
+        "composition": "angle45",
+        "subject": "arm",
+        "focal": 35,
+        "fill": 0.7,
+        "id": "s20"
+      },
+      {
+        "sequence": "climax",
+        "sequenceName": "高潮",
+        "summary": "半拍一刀。",
+        "name": "转",
+        "description": "高潮字卡。",
+        "kind": "broll-code",
+        "role": "climax",
+        "beats": 0.5,
+        "template": "kinetic",
+        "lines": [
+          "TURN"
+        ],
+        "id": "s21"
+      },
+      {
+        "sequence": "climax",
+        "sequenceName": "高潮",
+        "summary": "半拍一刀。",
+        "name": "正面闪切",
+        "description": "固定正面，半拍。",
+        "kind": "3d",
+        "role": "climax",
+        "beats": 0.5,
+        "action": "hold",
+        "move": "locked",
+        "composition": "front",
+        "subject": "screen",
+        "focal": 50,
+        "fill": 0.72,
+        "id": "s22"
+      },
+      {
+        "sequence": "climax",
+        "sequenceName": "高潮",
+        "summary": "半拍一刀。",
+        "name": "升",
+        "description": "高潮字卡。",
+        "kind": "broll-code",
+        "role": "climax",
+        "beats": 0.5,
+        "template": "kinetic",
+        "lines": [
+          "RISE"
+        ],
+        "id": "s23"
+      },
+      {
+        "sequence": "climax",
+        "sequenceName": "高潮",
+        "summary": "半拍一刀。",
+        "name": "侧面闪切",
+        "description": "固定侧面，半拍。",
+        "kind": "3d",
+        "role": "climax",
+        "beats": 0.5,
+        "action": "hold",
+        "move": "locked",
+        "composition": "side",
+        "subject": "arm",
+        "focal": 35,
+        "fill": 0.66,
+        "id": "s24"
+      },
+      {
+        "sequence": "climax",
+        "sequenceName": "高潮",
+        "summary": "半拍一刀。",
+        "name": "现在",
+        "description": "高潮最后一个字。",
+        "kind": "broll-code",
+        "role": "climax",
+        "beats": 0.5,
+        "template": "kinetic",
+        "lines": [
+          "NOW"
+        ],
+        "id": "s25"
+      },
+      {
+        "sequence": "climax",
+        "sequenceName": "高潮",
+        "summary": "半拍一刀。",
+        "name": "低机位闪切",
+        "description": "低机位固定，半拍。",
+        "kind": "3d",
+        "role": "climax",
+        "beats": 0.5,
+        "action": "hold",
+        "move": "locked",
+        "composition": "low",
+        "subject": "arm",
+        "focal": 28,
+        "fill": 0.68,
+        "id": "s26"
+      },
+      {
+        "sequence": "end",
+        "sequenceName": "收尾",
+        "summary": "长一点的英雄镜头，然后把 logo 停住。",
+        "name": "英雄后拉",
+        "description": "整臂居中，再次匀速后拉，速度和前面的产品镜一样。",
+        "kind": "3d",
+        "role": "product",
+        "beats": 14,
+        "action": "hold",
+        "move": "slow-pull",
+        "composition": "centered",
+        "subject": "arm",
+        "focal": 55,
+        "fill": 0.56,
+        "screenContent": "CYBOPAL",
+        "id": "s27"
+      },
+      {
+        "sequence": "end",
+        "sequenceName": "收尾",
+        "summary": "长一点的英雄镜头，然后把 logo 停住。",
+        "name": "标志",
+        "description": "logo 长停，让观众喘口气。",
+        "kind": "broll-code",
+        "role": "logo",
+        "beats": 12,
+        "template": "logo",
+        "lines": [
+          "CYBOPAL",
+          "THE SCREEN THAT MOVES"
+        ],
+        "id": "s28"
+      }
+    ],
+    "roles": {
+      "writer": "故事、字幕和有没有旁白。品牌片保持沉默。",
+      "director": "段落、镜头种类、拍数、产品动作。",
+      "dp": "命名运镜和构图预设，不拖机位。",
+      "editor": "按 BPM 把切点放上节拍，并检查手风琴节奏。"
+    }
+  },
+  "scores": [
+    {
+      "shotId": "s01",
+      "composition": 1,
+      "subjectSize": 1,
+      "rhythm": 0.888888888888889,
+      "light": 1,
+      "continuity": 1,
+      "notes": [],
+      "total": 0.9777777777777779
+    },
+    {
+      "shotId": "s02",
+      "composition": 0.9999383866138356,
+      "subjectSize": 0.9996297592821005,
+      "rhythm": 1,
+      "light": 1,
+      "continuity": 0.9147016089682083,
+      "notes": [],
+      "total": 0.9870972778192153
+    },
+    {
+      "shotId": "s03",
+      "composition": 1,
+      "subjectSize": 1,
+      "rhythm": 1,
+      "light": 1,
+      "continuity": 1,
+      "notes": [],
+      "total": 1
+    },
+    {
+      "shotId": "s04",
+      "composition": 0.9981132411517819,
+      "subjectSize": 0.9988531936465571,
+      "rhythm": 1,
+      "light": 1,
+      "continuity": 0.9772917483073711,
+      "notes": [],
+      "total": 0.9958353709456904
+    },
+    {
+      "shotId": "s05",
+      "composition": 1,
+      "subjectSize": 1,
+      "rhythm": 1,
+      "light": 1,
+      "continuity": 1,
+      "notes": [],
+      "total": 1
+    },
+    {
+      "shotId": "s06",
+      "composition": 1,
+      "subjectSize": 1,
+      "rhythm": 1,
+      "light": 1,
+      "continuity": 1,
+      "notes": [],
+      "total": 1
+    },
+    {
+      "shotId": "s07",
+      "composition": 0.9958278739065165,
+      "subjectSize": 0.9971251453640508,
+      "rhythm": 1,
+      "light": 1,
+      "continuity": 0.9202943855479526,
+      "notes": [],
+      "total": 0.9862824126498347
+    },
+    {
+      "shotId": "s08",
+      "composition": 1,
+      "subjectSize": 1,
+      "rhythm": 1,
+      "light": 1,
+      "continuity": 1,
+      "notes": [],
+      "total": 1
+    },
+    {
+      "shotId": "s09",
+      "composition": 1,
+      "subjectSize": 1,
+      "rhythm": 1,
+      "light": 1,
+      "continuity": 1,
+      "notes": [],
+      "total": 1
+    },
+    {
+      "shotId": "s10",
+      "composition": 0.9564073258260276,
+      "subjectSize": 0.9986010735906629,
+      "rhythm": 0.850574712643678,
+      "light": 1,
+      "continuity": 0.9378343073191914,
+      "notes": [],
+      "total": 0.9495421884807869
+    },
+    {
+      "shotId": "s11",
+      "composition": 1,
+      "subjectSize": 1,
+      "rhythm": 1,
+      "light": 1,
+      "continuity": 1,
+      "notes": [],
+      "total": 1
+    },
+    {
+      "shotId": "s12",
+      "composition": 0.9995177749384146,
+      "subjectSize": 0.9993349309446898,
+      "rhythm": 1,
+      "light": 1,
+      "continuity": 1,
+      "notes": [],
+      "total": 0.9997131764707762
+    },
+    {
+      "shotId": "s13",
+      "composition": 1,
+      "subjectSize": 1,
+      "rhythm": 1,
+      "light": 1,
+      "continuity": 1,
+      "notes": [],
+      "total": 1
+    },
+    {
+      "shotId": "s14",
+      "composition": 0.9986578392361061,
+      "subjectSize": 0.9998581622444355,
+      "rhythm": 1,
+      "light": 1,
+      "continuity": 1,
+      "notes": [],
+      "total": 0.9996290003701354
+    },
+    {
+      "shotId": "s15",
+      "composition": 1,
+      "subjectSize": 1,
+      "rhythm": 1,
+      "light": 1,
+      "continuity": 1,
+      "notes": [],
+      "total": 1
+    },
+    {
+      "shotId": "s16",
+      "composition": 0.9995833967706403,
+      "subjectSize": 0.9960625381332743,
+      "rhythm": 1,
+      "light": 1,
+      "continuity": 1,
+      "notes": [],
+      "total": 0.9989114837259787
+    },
+    {
+      "shotId": "s17",
+      "composition": 1,
+      "subjectSize": 1,
+      "rhythm": 1,
+      "light": 1,
+      "continuity": 1,
+      "notes": [],
+      "total": 1
+    },
+    {
+      "shotId": "s18",
+      "composition": 0.522305013775803,
+      "subjectSize": 0.686246437602819,
+      "rhythm": 1,
+      "light": 1,
+      "continuity": 1,
+      "notes": [],
+      "total": 0.8021378628446556
+    },
+    {
+      "shotId": "s19",
+      "composition": 1,
+      "subjectSize": 1,
+      "rhythm": 1,
+      "light": 1,
+      "continuity": 1,
+      "notes": [],
+      "total": 1
+    },
+    {
+      "shotId": "s20",
+      "composition": 0.9984416867418218,
+      "subjectSize": 0.9982429689450503,
+      "rhythm": 1,
+      "light": 1,
+      "continuity": 1,
+      "notes": [],
+      "total": 0.999171163921718
+    },
+    {
+      "shotId": "s21",
+      "composition": 1,
+      "subjectSize": 1,
+      "rhythm": 1,
+      "light": 1,
+      "continuity": 1,
+      "notes": [],
+      "total": 1
+    },
+    {
+      "shotId": "s22",
+      "composition": 0.021863596342968968,
+      "subjectSize": 0.4025353216580553,
+      "rhythm": 1,
+      "light": 1,
+      "continuity": 1,
+      "notes": [
+        "主体出画"
+      ],
+      "total": 0.6060997295002561
+    },
+    {
+      "shotId": "s23",
+      "composition": 1,
+      "subjectSize": 1,
+      "rhythm": 1,
+      "light": 1,
+      "continuity": 1,
+      "notes": [],
+      "total": 1
+    },
+    {
+      "shotId": "s24",
+      "composition": 0.9995724985466159,
+      "subjectSize": 0.9978359325307443,
+      "rhythm": 1,
+      "light": 1,
+      "continuity": 1,
+      "notes": [],
+      "total": 0.9993521077693401
+    },
+    {
+      "shotId": "s25",
+      "composition": 1,
+      "subjectSize": 1,
+      "rhythm": 1,
+      "light": 1,
+      "continuity": 1,
+      "notes": [],
+      "total": 1
+    },
+    {
+      "shotId": "s26",
+      "composition": 0.9097050866972679,
+      "subjectSize": 0.9984926773459056,
+      "rhythm": 1,
+      "light": 1,
+      "continuity": 1,
+      "notes": [],
+      "total": 0.9770494410107935
+    },
+    {
+      "shotId": "s27",
+      "composition": 0.9566562574017933,
+      "subjectSize": 0.9992479872803418,
+      "rhythm": 0.3620689655172413,
+      "light": 1,
+      "continuity": 0.92990858257799,
+      "notes": [],
+      "total": 0.8508761416606805
+    },
+    {
+      "shotId": "s28",
+      "composition": 1,
+      "subjectSize": 1,
+      "rhythm": 1,
+      "light": 1,
+      "continuity": 1,
+      "notes": [],
+      "total": 1
+    }
+  ],
+  "mean": 0.96890982624813,
+  "passes": 0,
+  "vision": "geometric"
+}

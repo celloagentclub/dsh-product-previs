@@ -10,4 +10,7 @@ const {readFile,writeFile}=await import('node:fs/promises');
 const indexPath=fileURLToPath(new URL('../render-dist/index.html',import.meta.url));
 const html=await readFile(indexPath,'utf8');
 await writeFile(indexPath,html.replace(/window\.remotion_cwd = "[^"]*";/,'window.remotion_cwd = "./";'));
+const bundlePath=fileURLToPath(new URL('../render-dist/bundle.js',import.meta.url));
+const bundled=await readFile(bundlePath,'utf8');
+await writeFile(bundlePath,bundled.replace(/\/\/# sourceMappingURL=.*$/gm,''));
 console.log('Built deterministic Remotion scene:',result);

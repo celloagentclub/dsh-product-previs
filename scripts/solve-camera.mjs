@@ -69,12 +69,12 @@ export function centroidOf(points) {
  * @param fill        subject height as a fraction of frame height (1 fills it)
  * @param wantX/wantY where the subject group should centre, in NDC (-1..1)
  */
-export function solveCamera({points, focalLength, aspect, azimuthDeg, elevationDeg, fill, wantX = 0, wantY = 0}) {
+export function solveCamera({points, focalLength, aspect, azimuthDeg, elevationDeg, fill, wantX = 0, wantY = 0, minDistance = 0.5, maxDistance = 60}) {
   if (points.length < 2) return null;
   const c = centroidOf(points);
   const dir = eyeDirection(azimuthDeg, elevationDeg);
   const wantHeight = fill * 2; // NDC spans -1..1
-  const MIN_D = 0.5, MAX_D = 60;
+  const MIN_D = minDistance, MAX_D = maxDistance;
 
   const eyeAt = d => [c[0] + dir[0] * d, c[1] + dir[1] * d, c[2] + dir[2] * d];
 

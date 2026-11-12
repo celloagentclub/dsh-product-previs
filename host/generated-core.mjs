@@ -38,14 +38,14 @@ function ease(t, easing = "linear") {
 }
 function keyInterval(keys, frame) {
   if (!keys.length) return null;
-  const ordered = [...keys].sort((a, b) => a.frame - b.frame);
-  const first = ordered[0];
+  const ordered2 = [...keys].sort((a, b) => a.frame - b.frame);
+  const first = ordered2[0];
   if (frame <= first.frame) return { a: first, b: first, t: 0 };
-  for (let i = 1; i < ordered.length; i++) {
-    const a = ordered[i - 1], b = ordered[i];
+  for (let i = 1; i < ordered2.length; i++) {
+    const a = ordered2[i - 1], b = ordered2[i];
     if (frame < b.frame) return { a, b, t: ease((frame - a.frame) / (b.frame - a.frame), a.easing) };
   }
-  const last = ordered[ordered.length - 1];
+  const last = ordered2[ordered2.length - 1];
   return { a: last, b: last, t: 0 };
 }
 function rotationAt(a, b, t) {
@@ -148,6 +148,13 @@ function finiteResult(value, path = "frame") {
   if (Array.isArray(value)) value.forEach((v, i) => finiteResult(v, `${path}[${i}]`));
   else if (value && typeof value === "object") Object.entries(value).forEach(([k, v]) => finiteResult(v, `${path}.${k}`));
 }
+function activeShot(project, frame) {
+  if (!project.shots.length) throw new Error("\u9879\u76EE\u6CA1\u6709\u955C\u5934\uFF1B\u8BF7\u5148\u6DFB\u52A0\u62CD\u6444\u955C\u5934\u518D\u9884\u89C8\u6216\u5BFC\u51FA");
+  if (!Number.isFinite(frame)) throw new Error("\u5E27\u53F7\u5FC5\u987B\u662F\u6709\u9650\u6570\u503C");
+  frame = clamp(frame, 0, Math.max(0, project.durationFrames - 1));
+  const shots = [...project.shots].sort((a, b) => a.start - b.start);
+  return shots.find((s) => s.start <= frame && frame < s.end) ?? [...shots].reverse().find((s) => s.start <= frame) ?? shots[0];
+}
 function evaluateProject(project, frame) {
   return evaluateProjectInternal(project, frame, true);
 }
@@ -181,8 +188,7 @@ function evaluateProjectInternal(project, frame, applyBinding) {
   if (!project.shots.length) throw new Error("\u9879\u76EE\u6CA1\u6709\u955C\u5934\uFF1B\u8BF7\u5148\u6DFB\u52A0\u62CD\u6444\u955C\u5934\u518D\u9884\u89C8\u6216\u5BFC\u51FA");
   if (!Number.isFinite(project.durationFrames) || project.durationFrames < 1 || !Number.isFinite(project.fps) || project.fps <= 0) throw new Error("\u9879\u76EE\u65F6\u957F\u6216\u5E27\u7387\u65E0\u6548");
   frame = clamp(frame, 0, project.durationFrames - 1);
-  const shots = [...project.shots].sort((a, b) => a.start - b.start);
-  const shot = shots.find((s) => s.start <= frame && frame < s.end) ?? [...shots].reverse().find((s) => s.start <= frame) ?? shots[0];
+  const shot = activeShot(project, frame);
   const objects = /* @__PURE__ */ Object.create(null);
   const trackMap = /* @__PURE__ */ new Map();
   for (const track of project.tracks) {
@@ -230,11 +236,534 @@ function evaluateProjectInternal(project, frame, applyBinding) {
   return result;
 }
 
+// src/audio/beats.ts
+function framesPerBeat(bpm, fps) {
+  return 60 / bpm * fps;
+}
+function median(values) {
+  if (!values.length) return 0;
+  const sorted = [...values].sort((a, b) => a - b);
+  return sorted[Math.floor(sorted.length / 2)];
+}
+function onsetSeconds(onsets, index, period) {
+  if (!onsets || onsets.length < 2) return index * period;
+  if (index < onsets.length) return onsets[index];
+  return onsets[onsets.length - 1] + (index - (onsets.length - 1)) * period;
+}
+function frameAtBeat(beat, bpm, fps, onsets) {
+  const ideal = 60 / bpm;
+  if (!onsets || onsets.length < 2) return Math.round(beat * ideal * fps);
+  const period = median(onsets.slice(1).map((time2, index) => time2 - onsets[index]).filter((gap) => gap > 0.05)) || ideal;
+  const i = Math.floor(beat);
+  const fraction = beat - i;
+  const time = onsetSeconds(onsets, i, period) + (onsetSeconds(onsets, i + 1, period) - onsetSeconds(onsets, i, period)) * fraction;
+  return Math.round(time * fps);
+}
+function placeRanges(items, bpm, fps, onsets) {
+  let cursor = 0;
+  const ranges = items.map((item) => {
+    const beats = item.beats > 0 ? item.beats : 1;
+    let start = frameAtBeat(cursor, bpm, fps, onsets);
+    let end = frameAtBeat(cursor + beats, bpm, fps, onsets);
+    if (end <= start) end = start + 1;
+    cursor += beats;
+    return { id: item.id, start, end, beats };
+  });
+  return { ranges, durationFrames: Math.max(1, frameAtBeat(cursor, bpm, fps, onsets)) };
+}
+function localMap(frame, fromStart, fromEnd, toStart, toEnd) {
+  if (fromEnd <= fromStart) return toStart;
+  const u = (frame - fromStart) / (fromEnd - fromStart);
+  return Math.round(toStart + u * (toEnd - toStart));
+}
+function realignProject(project, bpm, onsets) {
+  if (!(bpm > 0) || bpm > 400) throw new Error("BPM \u5FC5\u987B\u5728 0 \u5230 400 \u4E4B\u95F4");
+  const shots = [...project.shots].sort((a, b) => a.start - b.start);
+  const oldPeriod = framesPerBeat(project.film?.bpm || bpm, project.fps);
+  const items = shots.map((shot) => ({
+    id: shot.id,
+    beats: shot.intent?.beats && shot.intent.beats > 0 ? shot.intent.beats : Math.max(0.5, (shot.end - shot.start) / oldPeriod)
+  }));
+  const { ranges, durationFrames } = placeRanges(items, bpm, project.fps, onsets);
+  const byId = new Map(ranges.map((range) => [range.id, range]));
+  const nextShots = shots.map((shot) => {
+    const range = byId.get(shot.id);
+    return { ...shot, start: range.start, end: range.end, intent: { ...shot.intent, beats: range.beats } };
+  });
+  const limit = Math.max(0, durationFrames - 1);
+  const nextTracks = project.tracks.map((track) => {
+    const mapped = /* @__PURE__ */ new Map();
+    for (const key of track.keys) {
+      const owner = shots.find((shot) => key.frame >= shot.start && key.frame < shot.end) ?? shots.find((shot) => shot.start <= key.frame);
+      const range = owner ? byId.get(owner.id) : void 0;
+      let frame = range && owner ? localMap(key.frame, owner.start, owner.end, range.start, range.end) : key.frame;
+      frame = Math.max(0, Math.min(limit, frame));
+      mapped.set(frame, { ...key, frame });
+    }
+    const keys = [...mapped.values()].sort((a, b) => a.frame - b.frame);
+    return { ...track, keys: keys.length ? keys : [{ frame: 0, value: track.keys[0]?.value ?? 0 }] };
+  });
+  return {
+    ...project,
+    durationFrames,
+    shots: nextShots,
+    tracks: nextTracks,
+    film: project.film ? { ...project.film, bpm } : project.film,
+    audio: project.audio ? { ...project.audio, startFrame: Math.min(project.audio.startFrame, limit) } : project.audio
+  };
+}
+
+// src/camera/moves.ts
+import { Euler as Euler3, Matrix4 as Matrix44, Quaternion as Quaternion3, Vector3 as Vector34 } from "three";
+
+// src/product/arm.ts
+import { Matrix4 as Matrix43, Vector3 as Vector33 } from "three";
+
+// src/product/arm.calibration.json
+var arm_calibration_default = {
+  source: "KeyShot GLB https://drive.google.com/file/d/1laS08lVB8YCPYdybRQYlttEvu5Xx3F7b/view",
+  measured: "2026-11-12",
+  notes: "Product-local meters. The file's lux_root scales millimetres by 0.001. armOriginWorld is the \u79FB\u52A8\u673A\u68B0\u81C2 node origin. local = world - armOriginWorld. Segment nodes are siblings, not a parent chain; pivots below are those node origins (they sit on the hinge axes). Axes: segments 1-4 spin about local Z (the arm sweeps in XY). Screen normal is +X, so portrait is a roll about X. Limits are previs defaults, not certified mechanical stops \u2014 edit this file to calibrate.",
+  armOriginWorld: [-0.2918, 0.8, 0],
+  screenCenter: [0.27, 0.515, 0],
+  parts: [
+    { id: "base", label: "\u5E95\u5EA7", role: "product", shape: "box", center: [1e-3, 0.03, 0], size: [0.152, 0.06, 0.2] },
+    { id: "seg1", label: "\u7B2C\u4E00\u6BB5\u65CB\u8F6C\u673A\u68B0\u81C2", role: "product", shape: "cylinder", from: [0, 0.06, 0], to: [-0.035, 0.111, 0], radius: 0.028 },
+    { id: "seg2", label: "\u7B2C\u4E8C\u6BB5\u65CB\u8F6C\u673A\u68B0\u81C2", role: "product", shape: "cylinder", from: [-0.035, 0.111, 0], to: [0.0655, 0.5155, 0], radius: 0.032 },
+    { id: "seg3", label: "\u7B2C\u4E09\u6BB5\u65CB\u8F6C\u673A\u68B0\u81C2", role: "product", shape: "cylinder", from: [0.0655, 0.5155, 0], to: [0.1655, 0.5155, 0], radius: 0.026 },
+    { id: "seg4", label: "\u7B2C\u56DB\u6BB5\u65CB\u8F6C\u673A\u68B0\u81C2", role: "product", shape: "cylinder", from: [0.1655, 0.5155, 0], to: [0.242, 0.515, 0], radius: 0.024 },
+    { id: "seg5", label: "\u7B2C\u4E94\u6BB5\u65CB\u8F6C\u673A\u68B0\u81C2", role: "product", shape: "cylinder", from: [0.242, 0.515, 0], to: [0.27, 0.515, 0], radius: 0.02 },
+    { id: "bracket", label: "\u663E\u793A\u5668\u56FA\u5B9A\u652F\u67B6", role: "product", shape: "box", center: [0.248, 0.515, 0], size: [0.036, 0.11, 0.11] },
+    { id: "display", label: "Studio Display", role: "screen", shape: "box", center: [0.27, 0.515, 0], size: [0.028, 0.34, 0.6] }
+  ],
+  joints: [
+    { id: "base_yaw", label: "\u5E95\u5EA7\u65CB\u8F6C", pivot: [0, 0.03, 0], axis: [0, 1, 0], minDeg: -120, maxDeg: 120, restAngle: 0, affects: ["base", "seg1", "seg2", "seg3", "seg4", "seg5", "bracket", "display"] },
+    { id: "seg1", label: "\u7B2C\u4E00\u6BB5", parentId: "base_yaw", pivot: [-0.035, 0.111, 0], axis: [0, 0, 1], minDeg: -25, maxDeg: 25, restAngle: 0, affects: ["seg1"] },
+    { id: "seg2", label: "\u7B2C\u4E8C\u6BB5", parentId: "base_yaw", pivot: [-0.035, 0.111, 0], axis: [0, 0, 1], minDeg: -58, maxDeg: 36, restAngle: 0, affects: ["seg2", "seg3", "seg4", "seg5", "bracket", "display"] },
+    { id: "seg3", label: "\u7B2C\u4E09\u6BB5", parentId: "seg2", pivot: [0.0655, 0.5155, 0], axis: [0, 0, 1], minDeg: -40, maxDeg: 72, restAngle: 0, affects: ["seg3", "seg4", "seg5", "bracket", "display"] },
+    { id: "seg4", label: "\u7B2C\u56DB\u6BB5", parentId: "seg3", pivot: [0.1655, 0.5155, 0], axis: [0, 0, 1], minDeg: -45, maxDeg: 45, restAngle: 0, affects: ["seg4", "seg5", "bracket", "display"] },
+    { id: "portrait", label: "\u6A2A\u7AD6\u5C4F", parentId: "seg4", pivot: [0.27, 0.515, 0], axis: [1, 0, 0], minDeg: 0, maxDeg: 90, restAngle: 0, affects: ["bracket", "display"] }
+  ],
+  poses: {
+    folded: { seg2: -42, seg3: 48, seg4: -10 },
+    portrait: { portrait: 90 },
+    nod: { portrait: 90, seg4: 14 }
+  }
+};
+
+// src/product/arm.ts
+var rad2 = (deg2) => deg2 * Math.PI / 180;
+var v3 = (a) => [a[0], a[1], a[2]];
+var ARM_ORIGIN_WORLD = v3(arm_calibration_default.armOriginWorld);
+var SCREEN_CENTER = v3(arm_calibration_default.screenCenter);
+var ARM_PARTS = arm_calibration_default.parts;
+var ARM_JOINTS = arm_calibration_default.joints.map((joint) => ({
+  id: joint.id,
+  label: joint.label,
+  parentId: "parentId" in joint ? joint.parentId : void 0,
+  pivot: v3(joint.pivot),
+  axis: v3(joint.axis),
+  minDeg: joint.minDeg,
+  maxDeg: joint.maxDeg,
+  restAngle: joint.restAngle,
+  affects: [...joint.affects]
+}));
+var ACTIONS = ["hold", "unfold", "fold", "rise", "lower", "follow-face", "portrait", "landscape", "nod", "cable-tuck"];
+var POSE_DELTAS = {
+  rest: {},
+  folded: arm_calibration_default.poses.folded,
+  portrait: arm_calibration_default.poses.portrait,
+  nod: arm_calibration_default.poses.nod,
+  raised: { seg2: 12, seg3: -8 },
+  lowered: { seg2: -20, seg3: 16 }
+};
+function jointById(id) {
+  const joint = ARM_JOINTS.find((item) => item.id === id);
+  if (!joint) throw new Error(`\u5173\u8282\u4E0D\u5B58\u5728\uFF1A${id}`);
+  return joint;
+}
+function clampJoint(id, angle) {
+  const joint = jointById(id);
+  return Math.min(joint.maxDeg, Math.max(joint.minDeg, angle));
+}
+function poseAngles(name) {
+  const delta = POSE_DELTAS[name];
+  if (!delta) throw new Error(`\u59FF\u6001\u4E0D\u5B58\u5728\uFF1A${name}`);
+  const angles = {};
+  for (const joint of ARM_JOINTS) angles[joint.id] = clampJoint(joint.id, delta[joint.id] ?? joint.restAngle);
+  return angles;
+}
+function ordered(joints) {
+  const byId = new Map(joints.map((joint) => [joint.id, joint]));
+  const done = /* @__PURE__ */ new Set();
+  const result = [];
+  const visit = (joint) => {
+    if (done.has(joint.id)) return;
+    if (joint.parentId) {
+      const parent = byId.get(joint.parentId);
+      if (parent) visit(parent);
+    }
+    done.add(joint.id);
+    result.push(joint);
+  };
+  joints.forEach(visit);
+  return result;
+}
+function influencingJoints(partId) {
+  const byId = new Map(ARM_JOINTS.map((joint) => [joint.id, joint]));
+  const ids = /* @__PURE__ */ new Set();
+  for (const joint of ARM_JOINTS) if (joint.affects.includes(partId)) {
+    let current = joint;
+    while (current) {
+      ids.add(current.id);
+      current = current.parentId ? byId.get(current.parentId) : void 0;
+    }
+  }
+  return ordered(ARM_JOINTS.filter((joint) => ids.has(joint.id)));
+}
+function rotateAround(point, pivot, axis, degrees) {
+  if (Math.abs(degrees) < 1e-10) return [...point];
+  const matrix = new Matrix43().makeTranslation(...pivot).multiply(new Matrix43().makeRotationAxis(new Vector33(...axis).normalize(), rad2(degrees))).multiply(new Matrix43().makeTranslation(-pivot[0], -pivot[1], -pivot[2]));
+  return new Vector33(...point).applyMatrix4(matrix).toArray();
+}
+function transformPoint(partId, local, angles) {
+  const chain = influencingJoints(partId);
+  let point = [...local];
+  for (const joint of [...chain].reverse()) {
+    const delta = (angles[joint.id] ?? joint.restAngle) - joint.restAngle;
+    point = rotateAround(point, joint.pivot, joint.axis, delta);
+  }
+  return point;
+}
+function screenPosition(angles) {
+  return transformPoint("display", SCREEN_CENTER, angles);
+}
+var IK_JOINTS = ["seg4", "seg3", "seg2", "base_yaw"];
+function solveIk(goal, seed = {}, portrait) {
+  const angles = poseAngles("rest");
+  for (const [id, value] of Object.entries(seed)) if (id in angles && Number.isFinite(value)) angles[id] = clampJoint(id, value);
+  if (portrait !== void 0) angles.portrait = clampJoint("portrait", portrait);
+  const distance = () => Math.hypot(...goal.map((value, index) => value - screenPosition(angles)[index]));
+  for (let iteration = 0; iteration < 24 && distance() > 8e-3; iteration++) {
+    for (const id of IK_JOINTS) {
+      const origin = angles[id];
+      let best = origin, bestError = distance();
+      for (const delta of [-24, -10, -4, -1.5, -0.4, 0.4, 1.5, 4, 10, 24]) {
+        angles[id] = clampJoint(id, origin + delta);
+        const error2 = distance();
+        if (error2 < bestError) {
+          bestError = error2;
+          best = angles[id];
+        }
+      }
+      angles[id] = best;
+    }
+  }
+  const screen = screenPosition(angles);
+  const error = Math.hypot(...goal.map((value, index) => value - screen[index]));
+  return { angles, error, screen, reached: error < 0.02 };
+}
+function keysFor(start, end, from, to, mid) {
+  const last = Math.max(start, end - 1);
+  const joints = {};
+  for (const joint of ARM_JOINTS) {
+    const keys = [{ frame: start, value: from[joint.id], easing: "smooth" }];
+    if (mid && mid.at > start && mid.at < last) keys.push({ frame: mid.at, value: mid.pose[joint.id], easing: "smooth" });
+    if (last !== start) keys.push({ frame: last, value: to[joint.id], easing: "smooth" });
+    joints[joint.id] = keys;
+  }
+  return joints;
+}
+var CABLE_OUT = [0.18, 0.05, 0.09];
+var CABLE_IN = [0.055, 0.036, 0.05];
+function faceGoal(goal, facing, distance) {
+  if (goal) return goal;
+  const face = [0.9, 0.42, 0.05];
+  const look = facing ?? [-1, 0, 0];
+  const length = Math.hypot(...look) || 1;
+  const metres = distance ?? 0.6;
+  return face.map((value, index) => value + look[index] / length * metres);
+}
+function planAction(action, start, end, options = {}) {
+  if (!ACTIONS.includes(action)) throw new Error(`\u672A\u77E5\u673A\u68B0\u81C2\u52A8\u4F5C\uFF1A${action}\uFF08\u652F\u6301 ${ACTIONS.join(" / ")}\uFF09`);
+  if (!Number.isInteger(start) || !Number.isInteger(end) || start >= end) throw new Error("\u52A8\u4F5C\u9700\u8981\u6574\u6570\u5E27\u5E76\u4E14 start < end");
+  const rest = poseAngles("rest");
+  const folded = poseAngles("folded");
+  const portrait = poseAngles("portrait");
+  const nod = poseAngles("nod");
+  const motions = [];
+  let from = rest, to = rest, mid;
+  if (action === "unfold") {
+    from = folded;
+    to = rest;
+  } else if (action === "fold") {
+    from = rest;
+    to = folded;
+  } else if (action === "rise") {
+    from = poseAngles("lowered");
+    to = poseAngles("raised");
+  } else if (action === "lower") {
+    from = poseAngles("raised");
+    to = poseAngles("lowered");
+  } else if (action === "portrait") {
+    from = rest;
+    to = portrait;
+  } else if (action === "landscape") {
+    from = portrait;
+    to = rest;
+  } else if (action === "nod") {
+    from = portrait;
+    to = portrait;
+    mid = { at: start + Math.max(1, Math.round((end - start) * 0.45)), pose: nod };
+  } else if (action === "cable-tuck") {
+    from = portrait;
+    to = portrait;
+    const last = Math.max(start, end - 1);
+    motions.push({ objectId: "cable", property: "position", keys: [{ frame: start, value: CABLE_OUT, easing: "smooth" }, { frame: last, value: CABLE_IN, easing: "smooth" }] });
+  } else if (action === "follow-face") {
+    const solved = solveIk(faceGoal(options.goal, options.facing, options.distance), rest, options.portrait === false ? 0 : 90);
+    from = rest;
+    to = solved.angles;
+  }
+  return { joints: keysFor(start, end, from, to, mid), motions };
+}
+
+// scripts/solve-camera.mjs
+var SENSOR_HALF_HEIGHT_MM = 18;
+function basisOf(position, target) {
+  const f = [target[0] - position[0], target[1] - position[1], target[2] - position[2]];
+  const fl = Math.hypot(...f) || 1;
+  const nf = f.map((v) => v / fl);
+  let r = [nf[2], 0, -nf[0]];
+  const rl = Math.hypot(...r) || 1e-6;
+  r = r.map((v) => v / rl);
+  const u = [
+    r[1] * nf[2] - r[2] * nf[1],
+    r[2] * nf[0] - r[0] * nf[2],
+    r[0] * nf[1] - r[1] * nf[0]
+  ];
+  return { f: nf, r, u };
+}
+function projectPoint(position, target, focalLength, aspect, point) {
+  const { f, r, u } = basisOf(position, target);
+  const d = [point[0] - position[0], point[1] - position[1], point[2] - position[2]];
+  const z = d[0] * f[0] + d[1] * f[1] + d[2] * f[2];
+  if (z <= 1e-4) return null;
+  const halfH = SENSOR_HALF_HEIGHT_MM / focalLength;
+  const halfW = halfH * aspect;
+  return {
+    x: (d[0] * r[0] + d[1] * r[1] + d[2] * r[2]) / z / halfW,
+    y: (d[0] * u[0] + d[1] * u[1] + d[2] * u[2]) / z / halfH,
+    depth: z
+  };
+}
+function boundsOf(position, target, focalLength, aspect, points) {
+  const proj = points.map((p) => projectPoint(position, target, focalLength, aspect, p)).filter(Boolean);
+  if (proj.length < 2) return null;
+  const xs = proj.map((p) => p.x), ys = proj.map((p) => p.y);
+  const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+  return { x0, x1, y0, y1, width: x1 - x0, height: y1 - y0, cx: (x0 + x1) / 2, cy: (y0 + y1) / 2 };
+}
+function eyeDirection(azimuthDeg, elevationDeg) {
+  const az = azimuthDeg * Math.PI / 180, el = elevationDeg * Math.PI / 180;
+  return [Math.sin(az) * Math.cos(el), Math.sin(el), Math.cos(az) * Math.cos(el)];
+}
+function centroidOf(points) {
+  return [0, 1, 2].map((k) => points.reduce((a, p) => a + p[k], 0) / points.length);
+}
+function solveCamera({ points, focalLength, aspect, azimuthDeg, elevationDeg, fill, wantX = 0, wantY = 0, minDistance = 0.5, maxDistance = 60 }) {
+  if (points.length < 2) return null;
+  const c = centroidOf(points);
+  const dir = eyeDirection(azimuthDeg, elevationDeg);
+  const wantHeight = fill * 2;
+  const MIN_D = minDistance, MAX_D = maxDistance;
+  const eyeAt = (d) => [c[0] + dir[0] * d, c[1] + dir[1] * d, c[2] + dir[2] * d];
+  const bboxAt = (d) => boundsOf(eyeAt(d), c, focalLength, aspect, points);
+  let lo = MIN_D, hi = MAX_D;
+  const nearest = bboxAt(MIN_D), farthest = bboxAt(MAX_D);
+  if (!nearest || nearest.height < wantHeight) return null;
+  if (!farthest || farthest.height >= wantHeight) return null;
+  let distance = (lo + hi) / 2;
+  for (let i = 0; i < 60; i++) {
+    distance = (lo + hi) / 2;
+    const b = bboxAt(distance);
+    if (!b) {
+      hi = distance;
+      continue;
+    }
+    if (Math.abs(b.height - wantHeight) < 4e-3) break;
+    if (b.height > wantHeight) lo = distance;
+    else hi = distance;
+  }
+  const eye = eyeAt(distance);
+  let target = [...c];
+  let bestTarget = [...target], bestErr = Infinity;
+  for (let i = 0; i < 40; i++) {
+    const b = boundsOf(eye, target, focalLength, aspect, points);
+    if (!b) break;
+    const errX = wantX - b.cx, errY = wantY - b.cy;
+    const err = Math.hypot(errX, errY);
+    if (err < bestErr) {
+      bestErr = err;
+      bestTarget = [...target];
+    }
+    if (Math.abs(errX) < 1e-3 && Math.abs(errY) < 1e-3) break;
+    const { r, u } = basisOf(eye, target);
+    const spanY = 2 * (SENSOR_HALF_HEIGHT_MM / focalLength) * distance;
+    const spanX = spanY * aspect;
+    for (let k = 0; k < 3; k++) target[k] -= (r[k] * errX * spanX + u[k] * errY * spanY) * 0.5;
+  }
+  let finalEye = eye, finalTarget = bestTarget;
+  for (let pass = 0; pass < 6; pass++) {
+    const b = boundsOf(finalEye, finalTarget, focalLength, aspect, points);
+    if (!b) break;
+    if (Math.abs(b.height - wantHeight) < 4e-3) break;
+    const back = finalEye.map((v, k) => v - c[k]);
+    const len = Math.hypot(...back) || 1;
+    const axis = back.map((v) => v / len);
+    const scale = b.height / wantHeight;
+    const nextLen = len * scale;
+    const eyeNext = c.map((v, k) => v + axis[k] * nextLen);
+    const targetNext = finalTarget.map((v, k) => v + (eyeNext[k] - finalEye[k]));
+    const b2 = boundsOf(eyeNext, targetNext, focalLength, aspect, points);
+    if (!b2) break;
+    finalEye = eyeNext;
+    finalTarget = targetNext;
+    distance = nextLen;
+  }
+  return finish(distance, finalEye, finalTarget);
+  function finish(d, eyeOverride, targetOverride) {
+    const finalEye2 = eyeOverride ?? eyeAt(d);
+    const finalTarget2 = targetOverride ?? [...c];
+    const bounds = boundsOf(finalEye2, finalTarget2, focalLength, aspect, points);
+    if (!bounds) return null;
+    const focus = Math.hypot(...finalEye2.map((v, k) => v - finalTarget2[k]));
+    return {
+      pose: { position: finalEye2, target: finalTarget2, focalLength, focusDistance: focus, aperture: 8 },
+      bounds,
+      distance: d
+    };
+  }
+}
+
+// src/camera/solver.ts
+function solveCamera2(input) {
+  return solveCamera(input);
+}
+
+// src/camera/moves.ts
+var MOVE_NAMES = ["slow-pull", "slow-push", "locked", "orbit", "crane", "macro", "handheld", "over-shoulder"];
+var COMPOSITIONS = {
+  centered: { azimuth: 32, elevation: 8, wantX: 0, wantY: 0.02 },
+  macro: { azimuth: 78, elevation: 6, wantX: 0, wantY: 0 },
+  side: { azimuth: 0, elevation: 2, wantX: 0, wantY: 0 },
+  front: { azimuth: 90, elevation: 3, wantX: 0, wantY: 0 },
+  angle45: { azimuth: 45, elevation: 10, wantX: 0, wantY: 0 },
+  low: { azimuth: 24, elevation: -8, wantX: 0, wantY: -0.04 },
+  top: { azimuth: 20, elevation: 72, wantX: 0, wantY: 0 },
+  "over-shoulder": { azimuth: 155, elevation: 12, wantX: 0.28, wantY: 0.05 }
+};
+var SUBJECTS = {
+  shoulder: ["seg1"],
+  elbow: ["seg3"],
+  base: ["base"],
+  screen: ["display"],
+  arm: ARM_PARTS.map((part) => part.id),
+  motion: ARM_PARTS.map((part) => part.id)
+};
+var PULL_SPEED = 0.1;
+function solveAt(points, focal, aspect, azimuth, elevation, fill, wantX, wantY, minDistance) {
+  for (const attempt of [fill, fill * 0.85, fill * 0.7, Math.min(fill, 0.45)]) {
+    const result = solveCamera2({ points, focalLength: focal, aspect, azimuthDeg: azimuth, elevationDeg: elevation, fill: Math.max(0.12, attempt), wantX, wantY, minDistance });
+    if (!result) continue;
+    return { pose: { ...result.pose, position: result.pose.position, target: result.pose.target }, distance: result.distance };
+  }
+  return null;
+}
+function subjectPoints(project, objectId, frame, subject) {
+  const partIds = SUBJECTS[subject] ?? SUBJECTS.arm;
+  const state = evaluateProject(project, frame);
+  const object = project.objects.find((item) => item.id === objectId);
+  const asset = project.assets.find((item) => item.id === object?.assetId);
+  const evaluated = state.objects[objectId];
+  if (!object || !evaluated || asset?.kind !== "model") throw new Error(`\u53D6\u666F\u5BF9\u8C61\u4E0D\u5B58\u5728\uFF1A${objectId}`);
+  const origin = object.sourceOrigin ?? [0, 0, 0];
+  const rotation = evaluated.transform.rotation;
+  const objectMatrix = new Matrix44().compose(
+    new Vector34(...evaluated.transform.position),
+    new Quaternion3().setFromEuler(new Euler3(rotation[0] * Math.PI / 180, rotation[1] * Math.PI / 180, rotation[2] * Math.PI / 180, "XYZ")),
+    new Vector34(...evaluated.transform.scale)
+  );
+  const points = [];
+  for (const part of asset.parts.filter((item) => partIds.includes(item.id))) {
+    const delta = evaluated.partMatrices[part.id];
+    if (!delta) continue;
+    const local = new Matrix44().fromArray(delta);
+    for (const x of [part.bounds.min[0], part.bounds.max[0]]) {
+      for (const y of [part.bounds.min[1], part.bounds.max[1]]) {
+        for (const z of [part.bounds.min[2], part.bounds.max[2]]) {
+          const point = new Vector34(x - origin[0], y - origin[1], z - origin[2]).applyMatrix4(local).applyMatrix4(objectMatrix);
+          points.push([point.x, point.y, point.z]);
+        }
+      }
+    }
+  }
+  if (points.length < 2) throw new Error(`\u4E3B\u4F53\u6CA1\u6709\u53EF\u53D6\u666F\u7684\u70B9\uFF1A${subject}`);
+  return points;
+}
+function solveMove(options) {
+  const requested = options.move === "macro" ? "slow-pull" : options.move;
+  if (!MOVE_NAMES.includes(requested)) throw new Error(`\u672A\u77E5\u8FD0\u955C\uFF1A${options.move}\uFF08\u652F\u6301 ${MOVE_NAMES.join(" / ")}\uFF09`);
+  const compositionName = options.composition === "macro" ? "macro" : options.move === "over-shoulder" && !COMPOSITIONS[options.composition] ? "over-shoulder" : options.composition;
+  const preset = COMPOSITIONS[compositionName];
+  if (!preset) throw new Error(`\u672A\u77E5\u6784\u56FE\uFF1A${options.composition}\uFF08\u652F\u6301 ${Object.keys(COMPOSITIONS).join(" / ")}\uFF09`);
+  const azimuth = options.azimuth ?? preset.azimuth;
+  const elevation = options.elevation ?? preset.elevation;
+  const macro = compositionName === "macro" || options.move === "macro";
+  const focal = options.focal ?? (macro ? 85 : options.move === "over-shoulder" ? 40 : 50);
+  const fill = options.fill ?? (macro ? 0.72 : requested === "locked" ? 0.52 : 0.6);
+  const aperture = options.aperture ?? (macro ? 2.8 : requested === "locked" ? 5.6 : 4);
+  const aspect = options.project.width / options.project.height;
+  const subject = options.subject ?? (requested === "locked" ? "motion" : macro ? "shoulder" : "arm");
+  const minDistance = macro ? 0.08 : 0.35;
+  const duration = Math.max(1 / options.project.fps, (options.end - options.start - 1) / options.project.fps);
+  const framingSubject = subject === "motion" ? "arm" : subject;
+  const fromPoints = subjectPoints(options.project, options.objectId, options.start, framingSubject);
+  const toFrame = Math.max(options.start, options.end - 1);
+  const toPoints = subject === "motion" ? [...fromPoints, ...subjectPoints(options.project, options.objectId, toFrame, "arm")] : subjectPoints(options.project, options.objectId, toFrame, framingSubject);
+  const paint = (pose) => ({ ...pose, aperture, focalLength: focal });
+  const framed = subject === "motion" ? toPoints : fromPoints;
+  const startSolve = solveAt(framed, focal, aspect, azimuth, elevation, fill, preset.wantX, preset.wantY, minDistance);
+  if (!startSolve) throw new Error(`\u6784\u56FE\u65E0\u89E3\uFF1A${options.move} / ${options.composition}`);
+  if (requested === "locked" || requested === "over-shoulder") {
+    const pose = paint(startSolve.pose);
+    return { from: pose, to: { ...pose, position: [...pose.position], target: [...pose.target] }, move: "static", easing: "linear" };
+  }
+  if (requested === "orbit") {
+    const end2 = solveAt(fromPoints, focal, aspect, azimuth + 26, elevation, fill, preset.wantX, preset.wantY, minDistance) ?? startSolve;
+    return { from: paint(startSolve.pose), to: paint(end2.pose), move: "orbit", easing: "linear", orbitDegrees: 26 };
+  }
+  if (requested === "crane") {
+    const end2 = solveAt(fromPoints, focal, aspect, azimuth, elevation + 16, fill, preset.wantX, preset.wantY, minDistance) ?? startSolve;
+    return { from: paint(startSolve.pose), to: paint(end2.pose), move: "linear", easing: "smooth" };
+  }
+  if (requested === "handheld") {
+    const end2 = solveAt(fromPoints, focal, aspect, azimuth + 3, elevation + 1, fill * 0.96, preset.wantX, preset.wantY, minDistance) ?? startSolve;
+    const mid = startSolve.pose.position.map((value, index) => value * 0.55 + end2.pose.position[index] * 0.45 + [0.014, 8e-3, -0.01][index]);
+    return { from: { ...paint(startSolve.pose), roll: -1.3 }, to: { ...paint(end2.pose), roll: 1.1 }, move: "spline", easing: "linear", points: [mid] };
+  }
+  const speed = options.pullSpeed ?? PULL_SPEED;
+  const endDistance = Math.max(minDistance + 0.02, startSolve.distance + (requested === "slow-push" ? -1 : 1) * speed * duration);
+  const endFill = Math.min(0.92, Math.max(0.18, fill * (startSolve.distance / endDistance)));
+  const end = solveAt(toPoints, focal, aspect, azimuth, elevation, endFill, preset.wantX, preset.wantY, minDistance) ?? startSolve;
+  return { from: paint(startSolve.pose), to: paint(end.pose), move: "linear", easing: "linear" };
+}
+
 // src/core/commands.ts
 var fields = {
-  project: ["schemaVersion", "id", "name", "revision", "fps", "durationFrames", "width", "height", "assets", "objects", "shots", "tracks", "audio", "createdAt", "updatedAt"],
+  project: ["schemaVersion", "id", "name", "revision", "fps", "durationFrames", "width", "height", "assets", "objects", "shots", "tracks", "audio", "film", "sequences", "createdAt", "updatedAt"],
   object: ["id", "name", "kind", "transform", "visible", "locked", "color", "assetId", "partIds", "sourceOrigin", "joints", "explodeDirections", "actor", "screen", "light"],
-  shot: ["id", "name", "start", "end", "description", "camera"],
+  shot: ["id", "name", "start", "end", "description", "camera", "kind", "sequenceId", "dialogue", "screenContent", "broll", "intent", "videoPrompt"],
   track: ["id", "objectId", "property", "keys"],
   joint: ["id", "label", "parentId", "pivot", "axis", "minDeg", "maxDeg", "restAngle", "affects"],
   pose: ["position", "target", "focalLength", "focusDistance", "aperture", "roll"]
@@ -499,6 +1028,32 @@ function validateDocument(project) {
     mountState.set(object.id, 2);
   };
   objects.forEach(visitMount);
+  const sequenceIds = /* @__PURE__ */ new Set();
+  if (project.film !== void 0 && row(project.film, "film", ["id", "title", "style", "look", "logline", "bpm", "grade"])) {
+    register(project.film.id, "film.id");
+    text(project.film.title, "film.title", 500);
+    text(project.film.logline, "film.logline", 4e3);
+    choice(project.film.style, "film.style", ["brand", "creator"]);
+    choice(project.film.look, "film.look", ["studio-black", "desk"]);
+    if (project.film.bpm !== void 0) number(project.film.bpm, "film.bpm", 20, 400);
+    if (project.film.grade !== void 0) boolean(project.film.grade, "film.grade");
+  }
+  if (project.sequences !== void 0 && list(project.sequences, "sequences")) project.sequences.forEach((sequence, i) => {
+    const p = `sequences[${i}]`;
+    if (!row(sequence, p, ["id", "name", "start", "end", "summary", "role"])) return;
+    register(sequence.id, `${p}.id`);
+    if (typeof sequence.id === "string") sequenceIds.add(sequence.id);
+    text(sequence.name, `${p}.name`, 500);
+    text(sequence.summary, `${p}.summary`, 4e3);
+    number(sequence.start, `${p}.start`, 0, endFrame, true);
+    number(sequence.end, `${p}.end`, 1, project.durationFrames, true);
+    if (sequence.start >= sequence.end) err(p, "\u6BB5\u843D\u5FC5\u987B\u6EE1\u8DB3 start < end");
+    if (sequence.role !== void 0) text(sequence.role, `${p}.role`, 80);
+  });
+  if (Array.isArray(project.sequences)) {
+    const sorted = [...project.sequences].filter(isRow).sort((a, b) => a.start - b.start);
+    for (let i = 1; i < sorted.length; i++) if (sorted[i].start < sorted[i - 1].end) err("sequences", `\u6BB5\u843D\u65F6\u95F4\u91CD\u53E0\uFF1A${sorted[i - 1].id} / ${sorted[i].id}`);
+  }
   if (list(project.shots, "shots")) {
     project.shots.forEach((shot, i) => {
       const p = `shots[${i}]`;
@@ -532,6 +1087,35 @@ function validateDocument(project) {
           if (binding.offset !== void 0) vector(binding.offset, `${p}.camera.targetBinding.offset`);
           if (binding.followPosition !== void 0) boolean(binding.followPosition, `${p}.camera.targetBinding.followPosition`);
         }
+      }
+      if (shot.kind !== void 0) choice(shot.kind, `${p}.kind`, ["3d", "broll-code"]);
+      if (shot.sequenceId !== void 0) {
+        id(shot.sequenceId, `${p}.sequenceId`);
+        if (!sequenceIds.has(shot.sequenceId)) err(`${p}.sequenceId`, "\u6BB5\u843D\u4E0D\u5B58\u5728");
+      }
+      if (shot.screenContent !== void 0) text(shot.screenContent, `${p}.screenContent`, 2e3);
+      if (shot.videoPrompt !== void 0) text(shot.videoPrompt, `${p}.videoPrompt`, 4e3);
+      if (shot.dialogue !== void 0 && row(shot.dialogue, `${p}.dialogue`, ["speaker", "line", "vo"])) {
+        text(shot.dialogue.speaker, `${p}.dialogue.speaker`, 80);
+        text(shot.dialogue.line, `${p}.dialogue.line`, 2e3);
+        if (shot.dialogue.vo !== void 0) boolean(shot.dialogue.vo, `${p}.dialogue.vo`);
+      }
+      if (shot.broll !== void 0 && row(shot.broll, `${p}.broll`, ["template", "lines", "accent"])) {
+        choice(shot.broll.template, `${p}.broll.template`, ["kinetic", "spec", "ui", "diagram", "logo"]);
+        if (shot.broll.accent !== void 0) text(shot.broll.accent, `${p}.broll.accent`, 40);
+        if (list(shot.broll.lines, `${p}.broll.lines`)) {
+          if (!shot.broll.lines.length || shot.broll.lines.length > 8) err(`${p}.broll.lines`, "\u9700\u8981 1 \u5230 8 \u884C");
+          shot.broll.lines.forEach((line, j) => text(line, `${p}.broll.lines[${j}]`, 80));
+        }
+      }
+      if (shot.kind === "broll-code" && !shot.broll) err(p, "\u4EE3\u7801 B-roll \u955C\u5934\u9700\u8981 broll \u6A21\u677F");
+      if (shot.intent !== void 0 && row(shot.intent, `${p}.intent`, ["move", "composition", "subject", "role", "azimuth", "elevation", "fill", "focal", "wantX", "wantY", "beats", "aperture", "pullSpeed"])) {
+        for (const key of ["move", "composition", "subject", "role"]) if (shot.intent[key] !== void 0) text(shot.intent[key], `${p}.intent.${key}`, 80);
+        for (const key of ["azimuth", "elevation", "focal", "aperture", "pullSpeed"]) if (shot.intent[key] !== void 0) number(shot.intent[key], `${p}.intent.${key}`, key === "aperture" || key === "pullSpeed" || key === "focal" ? 0.01 : -36e3, key === "focal" ? 2e3 : 36e3);
+        if (shot.intent.fill !== void 0) number(shot.intent.fill, `${p}.intent.fill`, 0.05, 1.5);
+        if (shot.intent.wantX !== void 0) number(shot.intent.wantX, `${p}.intent.wantX`, -1, 1);
+        if (shot.intent.wantY !== void 0) number(shot.intent.wantY, `${p}.intent.wantY`, -1, 1);
+        if (shot.intent.beats !== void 0) number(shot.intent.beats, `${p}.intent.beats`, 0.25, 1e4);
       }
     });
     const sorted = [...project.shots].filter(isRow).sort((a, b) => a.start - b.start);
@@ -664,6 +1248,105 @@ function applyCommands(project, commands) {
         assertFields(command, ["type", "asset"], command.type);
         result.assets.push(clone(command.asset));
         break;
+      case "film.set":
+        assertFields(command, ["type", "film"], command.type);
+        result.film = clone(command.film);
+        break;
+      case "sequence.add":
+        assertFields(command, ["type", "sequence"], command.type);
+        result.sequences = [...result.sequences ?? [], clone(command.sequence)];
+        break;
+      case "sequence.update": {
+        assertFields(command, ["type", "id", "patch"], command.type);
+        assertFields(command.patch, ["name", "start", "end", "summary", "role"], command.type);
+        const sequences = result.sequences ?? [];
+        Object.assign(existing(sequences, command.id, "\u6BB5\u843D"), clone(command.patch));
+        break;
+      }
+      case "sequence.remove": {
+        assertFields(command, ["type", "id"], command.type);
+        existing(result.sequences ?? [], command.id, "\u6BB5\u843D");
+        result.sequences = (result.sequences ?? []).filter((sequence) => sequence.id !== command.id);
+        for (const shot of result.shots) if (shot.sequenceId === command.id) delete shot.sequenceId;
+        break;
+      }
+      case "audio.set":
+        assertFields(command, ["type", "audio"], command.type);
+        result.audio = clone(command.audio);
+        break;
+      case "arm.action": {
+        assertFields(command, ["type", "objectId", "action", "start", "end", "goal", "facing", "distance", "portrait"], command.type);
+        const object = existing(result.objects, command.objectId, "\u5BF9\u8C61");
+        if (command.goal !== void 0 && !Array.isArray(command.goal)) throw new Error("goal \u5FC5\u987B\u662F\u4E09\u5143\u5411\u91CF");
+        if (command.facing !== void 0 && !Array.isArray(command.facing)) throw new Error("facing \u5FC5\u987B\u662F\u4E09\u5143\u5411\u91CF");
+        const plan = planAction(command.action, command.start, command.end, { goal: command.goal, facing: command.facing, distance: command.distance, portrait: command.portrait });
+        const merge = (track) => {
+          const index = result.tracks.findIndex((item) => item.id === track.id);
+          if (index < 0) {
+            result.tracks.push(track);
+            return;
+          }
+          const keys = new Map(result.tracks[index].keys.map((key) => [key.frame, key]));
+          for (const key of track.keys) keys.set(key.frame, key);
+          result.tracks[index] = { ...result.tracks[index], keys: [...keys.values()].sort((a, b) => a.frame - b.frame) };
+        };
+        for (const [jointId, keys] of Object.entries(plan.joints)) {
+          if (!object.joints?.some((joint) => joint.id === jointId)) throw new Error(`\u5BF9\u8C61 ${object.id} \u6CA1\u6709\u5173\u8282 ${jointId}`);
+          merge({ id: `${object.id}-joint-${jointId}`, objectId: object.id, property: `joint:${jointId}`, keys });
+        }
+        for (const motion of plan.motions) {
+          existing(result.objects, motion.objectId, "\u5BF9\u8C61");
+          merge({ id: `${motion.objectId}-${motion.property}`, objectId: motion.objectId, property: motion.property, keys: motion.keys });
+        }
+        break;
+      }
+      case "camera.apply": {
+        assertFields(command, ["type", "shotId", "move", "composition", "subject", "azimuth", "elevation", "fill", "focal", "aperture", "pullSpeed"], command.type);
+        const shot = existing(result.shots, command.shotId, "\u955C\u5934");
+        const object = result.objects.find((item) => item.joints?.some((joint) => joint.id === "portrait")) ?? result.objects.find((item) => item.kind === "model");
+        if (!object) throw new Error("\u573A\u666F\u91CC\u6CA1\u6709\u53EF\u53D6\u666F\u7684\u6A21\u578B");
+        const solved = solveMove({
+          project: result,
+          objectId: object.id,
+          start: shot.start,
+          end: shot.end,
+          move: command.move,
+          composition: command.composition,
+          subject: command.subject,
+          azimuth: command.azimuth,
+          elevation: command.elevation,
+          fill: command.fill,
+          focal: command.focal,
+          aperture: command.aperture,
+          pullSpeed: command.pullSpeed
+        });
+        const { points, orbitDegrees, ...camera } = solved;
+        shot.camera = { ...camera, ...orbitDegrees !== void 0 ? { orbitDegrees } : {}, ...points ? { points } : {} };
+        shot.intent = {
+          ...shot.intent,
+          move: command.move,
+          composition: command.composition,
+          ...command.subject !== void 0 ? { subject: command.subject } : {},
+          ...command.azimuth !== void 0 ? { azimuth: command.azimuth } : {},
+          ...command.elevation !== void 0 ? { elevation: command.elevation } : {},
+          ...command.fill !== void 0 ? { fill: command.fill } : {},
+          ...command.focal !== void 0 ? { focal: command.focal } : {},
+          ...command.aperture !== void 0 ? { aperture: command.aperture } : {},
+          ...command.pullSpeed !== void 0 ? { pullSpeed: command.pullSpeed } : {}
+        };
+        break;
+      }
+      case "timeline.align": {
+        assertFields(command, ["type", "bpm", "onsets"], command.type);
+        if (command.onsets !== void 0 && (!Array.isArray(command.onsets) || command.onsets.some((item) => typeof item !== "number" || !Number.isFinite(item)))) throw new Error("onsets \u5FC5\u987B\u662F\u79D2\u6570\u6570\u7EC4");
+        const aligned = realignProject(result, command.bpm, command.onsets);
+        result.shots = aligned.shots;
+        result.tracks = aligned.tracks;
+        result.durationFrames = aligned.durationFrames;
+        result.film = aligned.film;
+        result.audio = aligned.audio;
+        break;
+      }
       default:
         throw new Error(`\u672A\u77E5\u547D\u4EE4\uFF1A${String(command.type)}`);
     }
@@ -674,6 +1357,7 @@ ${errors.join("\n")}`);
   return result;
 }
 export {
+  activeShot,
   applyCommands,
   ease,
   evaluateCamera,

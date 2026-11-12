@@ -1,6 +1,6 @@
 {
   "name": "dsh-product-previs",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "type": "module",
   "description": "产品白模导演预演：三维布景、机位、产品与人物动作、AI 编排和 MP4 导出",
   "license": "MIT",
@@ -31,18 +31,23 @@
     "test:camera": "node --test tests/camera.test.mjs",
     "audit:camera": "node scripts/audit-frames.mjs",
     "stage:shots": "node scripts/stage-shots.mjs",
-    "handoff": "node scripts/handoff-frames.mjs && node scripts/handoff-prompts.mjs"
+    "handoff": "node scripts/handoff-frames.mjs && node scripts/handoff-prompts.mjs",
+    "previs": "node scripts/run-previs.mjs",
+    "arm:white": "node scripts/build-white-arm.mjs",
+    "arm:calibrate": "node scripts/calibrate-arm.mjs"
   },
   "dependencies": {
-    "@react-three/fiber": "9.8.2",
     "@react-three/drei": "10.7.9",
-    "three": "0.186.0",
+    "@react-three/fiber": "9.8.2",
+    "@react-three/postprocessing": "^3.2.2",
+    "@remotion/renderer": "4.0.519",
+    "@remotion/three": "4.0.519",
+    "lucide-react": "0.468.0",
+    "postprocessing": "^6.39.6",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "remotion": "4.0.519",
-    "@remotion/three": "4.0.519",
-    "@remotion/renderer": "4.0.519",
-    "lucide-react": "0.468.0"
+    "three": "0.186.0"
   },
   "devDependencies": {
     "@remotion/bundler": "4.0.519",
@@ -51,10 +56,10 @@
     "@types/react-dom": "19.2.3",
     "@types/three": "0.186.0",
     "@vitejs/plugin-react": "4.7.0",
-    "vite": "6.4.3",
+    "esbuild": "^0.25.0",
     "typescript": "5.9.3",
-    "vitest": "^3.0.0",
-    "esbuild": "^0.25.0"
+    "vite": "6.4.3",
+    "vitest": "^3.0.0"
   },
   "dsh": {
     "engines": {

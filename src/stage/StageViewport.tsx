@@ -153,7 +153,7 @@ export function StageViewport({project, frame, mode, assetUrl, selectedId, tool 
   return <div ref={container} className={`previs-stage-viewport previs-stage-${mode}`} aria-label={mode === 'stage' ? '三维场景观察视图' : '拍摄机位监看'}>
     <ResourceBoundary resetKey={resetKey}>
       <div className="previs-stage-canvas" style={monitorWidth ? {width: monitorWidth, height: monitorWidth / ratio} : {width: '100%', height: '100%'}}>
-        <Canvas key={project.id} dpr={1} onCreated={({gl})=>{const w=window as unknown as {__previsDebug?:Record<string,unknown>};w.__previsDebug??={};w.__previsDebug[mode]=gl;}} camera={{position: observer.position, fov: 42, near: 0.01, far: 100000}} gl={{antialias: true, alpha: false}}>
+        <Canvas key={project.id} shadows dpr={1} onCreated={({gl})=>{const w=window as unknown as {__previsDebug?:Record<string,unknown>};w.__previsDebug??={};w.__previsDebug[mode]=gl;}} camera={{position: observer.position, fov: 42, near: 0.01, far: 100000}} gl={{antialias: true, alpha: false}}>
           <ObjectRegistryContext.Provider value={register}>
             <Suspense fallback={<LoadingSignal setLoading={setLoading}/>}>
               <SceneContent project={project} frame={frame} assetUrl={assetUrl} helpers={mode === 'stage' && showHelpers} selectedId={selectedId} onSelect={onSelect}/>
