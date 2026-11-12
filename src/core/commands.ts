@@ -1,10 +1,13 @@
-import type {Command, PrevisProject} from './types';
+import {realignProject} from '../audio/beats';
+import {solveMove} from '../camera/moves';
+import {planAction} from '../product/arm';
+import type {Command, PrevisProject, Track} from './types';
 
 type Row = Record<string, unknown>;
 const fields = {
-  project: ['schemaVersion', 'id', 'name', 'revision', 'fps', 'durationFrames', 'width', 'height', 'assets', 'objects', 'shots', 'tracks', 'audio', 'createdAt', 'updatedAt'],
+  project: ['schemaVersion', 'id', 'name', 'revision', 'fps', 'durationFrames', 'width', 'height', 'assets', 'objects', 'shots', 'tracks', 'audio', 'film', 'sequences', 'createdAt', 'updatedAt'],
   object: ['id', 'name', 'kind', 'transform', 'visible', 'locked', 'color', 'assetId', 'partIds', 'sourceOrigin', 'joints', 'explodeDirections', 'actor', 'screen', 'light'],
-  shot: ['id', 'name', 'start', 'end', 'description', 'camera'],
+  shot: ['id', 'name', 'start', 'end', 'description', 'camera', 'kind', 'sequenceId', 'dialogue', 'screenContent', 'broll', 'intent', 'videoPrompt'],
   track: ['id', 'objectId', 'property', 'keys'],
   joint: ['id', 'label', 'parentId', 'pivot', 'axis', 'minDeg', 'maxDeg', 'restAngle', 'affects'],
   pose: ['position', 'target', 'focalLength', 'focusDistance', 'aperture', 'roll'],
@@ -187,6 +190,26 @@ function validateDocument(project: PrevisProject): string[] {
     mountPath.pop(); mountState.set(object.id, 2);
   };
   objects.forEach(visitMount);
+  const sequenceIds = new Set<string>();
+  if (project.film !== undefined && row(project.film, 'film', ['id', 'title', 'style', 'look', 'logline', 'bpm', 'grade'])) {
+    register(project.film.id, 'film.id'); text(project.film.title, 'film.title', 500); text(project.film.logline, 'film.logline', 4000);
+    choice(project.film.style, 'film.style', ['brand', 'creator']); choice(project.film.look, 'film.look', ['studio-black', 'desk']);
+    if (project.film.bpm !== undefined) number(project.film.bpm, 'film.bpm', 20, 400);
+    if (project.film.grade !== undefined) boolean(project.film.grade, 'film.grade');
+  }
+  if (project.sequences !== undefined && list(project.sequences, 'sequences')) project.sequences.forEach((sequence, i) => {
+    const p = `sequences[${i}]`;
+    if (!row(sequence, p, ['id', 'name', 'start', 'end', 'summary', 'role'])) return;
+    register(sequence.id, `${p}.id`); if (typeof sequence.id === 'string') sequenceIds.add(sequence.id);
+    text(sequence.name, `${p}.name`, 500); text(sequence.summary, `${p}.summary`, 4000);
+    number(sequence.start, `${p}.start`, 0, endFrame, true); number(sequence.end, `${p}.end`, 1, project.durationFrames, true);
+    if (sequence.start >= sequence.end) err(p, '段落必须满足 start < end');
+    if (sequence.role !== undefined) text(sequence.role, `${p}.role`, 80);
+  });
+  if (Array.isArray(project.sequences)) {
+    const sorted = [...project.sequences].filter(isRow).sort((a, b) => a.start - b.start);
+    for (let i = 1; i < sorted.length; i++) if (sorted[i].start < sorted[i - 1].end) err('sequences', `段落时间重叠：${sorted[i - 1].id} / ${sorted[i].id}`);
+  }
   if (list(project.shots, 'shots')) {
     project.shots.forEach((shot, i) => {
       const p = `shots[${i}]`;
@@ -212,6 +235,31 @@ function validateDocument(project: PrevisProject): string[] {
           if (binding.offset !== undefined) vector(binding.offset, `${p}.camera.targetBinding.offset`);
           if (binding.followPosition !== undefined) boolean(binding.followPosition, `${p}.camera.targetBinding.followPosition`);
         }
+      }
+      if (shot.kind !== undefined) choice(shot.kind, `${p}.kind`, ['3d', 'broll-code']);
+      if (shot.sequenceId !== undefined) { id(shot.sequenceId, `${p}.sequenceId`); if (!sequenceIds.has(shot.sequenceId)) err(`${p}.sequenceId`, '段落不存在'); }
+      if (shot.screenContent !== undefined) text(shot.screenContent, `${p}.screenContent`, 2000);
+      if (shot.videoPrompt !== undefined) text(shot.videoPrompt, `${p}.videoPrompt`, 4000);
+      if (shot.dialogue !== undefined && row(shot.dialogue, `${p}.dialogue`, ['speaker', 'line', 'vo'])) {
+        text(shot.dialogue.speaker, `${p}.dialogue.speaker`, 80); text(shot.dialogue.line, `${p}.dialogue.line`, 2000);
+        if (shot.dialogue.vo !== undefined) boolean(shot.dialogue.vo, `${p}.dialogue.vo`);
+      }
+      if (shot.broll !== undefined && row(shot.broll, `${p}.broll`, ['template', 'lines', 'accent'])) {
+        choice(shot.broll.template, `${p}.broll.template`, ['kinetic', 'spec', 'ui', 'diagram', 'logo']);
+        if (shot.broll.accent !== undefined) text(shot.broll.accent, `${p}.broll.accent`, 40);
+        if (list(shot.broll.lines, `${p}.broll.lines`)) {
+          if (!shot.broll.lines.length || shot.broll.lines.length > 8) err(`${p}.broll.lines`, '需要 1 到 8 行');
+          shot.broll.lines.forEach((line, j) => text(line, `${p}.broll.lines[${j}]`, 80));
+        }
+      }
+      if (shot.kind === 'broll-code' && !shot.broll) err(p, '代码 B-roll 镜头需要 broll 模板');
+      if (shot.intent !== undefined && row(shot.intent, `${p}.intent`, ['move', 'composition', 'subject', 'role', 'azimuth', 'elevation', 'fill', 'focal', 'wantX', 'wantY', 'beats', 'aperture', 'pullSpeed'])) {
+        for (const key of ['move', 'composition', 'subject', 'role'] as const) if (shot.intent[key] !== undefined) text(shot.intent[key], `${p}.intent.${key}`, 80);
+        for (const key of ['azimuth', 'elevation', 'focal', 'aperture', 'pullSpeed'] as const) if (shot.intent[key] !== undefined) number(shot.intent[key], `${p}.intent.${key}`, key === 'aperture' || key === 'pullSpeed' || key === 'focal' ? 0.01 : -36000, key === 'focal' ? 2000 : 36000);
+        if (shot.intent.fill !== undefined) number(shot.intent.fill, `${p}.intent.fill`, 0.05, 1.5);
+        if (shot.intent.wantX !== undefined) number(shot.intent.wantX, `${p}.intent.wantX`, -1, 1);
+        if (shot.intent.wantY !== undefined) number(shot.intent.wantY, `${p}.intent.wantY`, -1, 1);
+        if (shot.intent.beats !== undefined) number(shot.intent.beats, `${p}.intent.beats`, 0.25, 10000);
       }
     });
     const sorted = [...project.shots].filter(isRow).sort((a, b) => a.start - b.start);
@@ -326,6 +374,82 @@ export function applyCommands(project: PrevisProject, commands: Command[]): Prev
       case 'asset.add':
         assertFields(command, ['type', 'asset'], command.type);
         result.assets.push(clone(command.asset)); break;
+      case 'film.set':
+        assertFields(command, ['type', 'film'], command.type);
+        result.film = clone(command.film); break;
+      case 'sequence.add':
+        assertFields(command, ['type', 'sequence'], command.type);
+        result.sequences = [...(result.sequences ?? []), clone(command.sequence)]; break;
+      case 'sequence.update': {
+        assertFields(command, ['type', 'id', 'patch'], command.type);
+        assertFields(command.patch, ['name', 'start', 'end', 'summary', 'role'], command.type);
+        const sequences = result.sequences ?? [];
+        Object.assign(existing(sequences, command.id, '段落'), clone(command.patch)); break;
+      }
+      case 'sequence.remove': {
+        assertFields(command, ['type', 'id'], command.type);
+        existing(result.sequences ?? [], command.id, '段落');
+        result.sequences = (result.sequences ?? []).filter(sequence => sequence.id !== command.id);
+        for (const shot of result.shots) if (shot.sequenceId === command.id) delete shot.sequenceId;
+        break;
+      }
+      case 'audio.set':
+        assertFields(command, ['type', 'audio'], command.type);
+        result.audio = clone(command.audio); break;
+      case 'arm.action': {
+        assertFields(command, ['type', 'objectId', 'action', 'start', 'end', 'goal', 'facing', 'distance', 'portrait'], command.type);
+        const object = existing(result.objects, command.objectId, '对象');
+        if (command.goal !== undefined && !Array.isArray(command.goal)) throw new Error('goal 必须是三元向量');
+        if (command.facing !== undefined && !Array.isArray(command.facing)) throw new Error('facing 必须是三元向量');
+        const plan = planAction(command.action, command.start, command.end, {goal: command.goal, facing: command.facing, distance: command.distance, portrait: command.portrait});
+        const merge = (track: Track) => {
+          const index = result.tracks.findIndex(item => item.id === track.id);
+          if (index < 0) { result.tracks.push(track); return; }
+          const keys = new Map(result.tracks[index].keys.map(key => [key.frame, key]));
+          for (const key of track.keys) keys.set(key.frame, key);
+          result.tracks[index] = {...result.tracks[index], keys: [...keys.values()].sort((a, b) => a.frame - b.frame)};
+        };
+        for (const [jointId, keys] of Object.entries(plan.joints)) {
+          if (!object.joints?.some(joint => joint.id === jointId)) throw new Error(`对象 ${object.id} 没有关节 ${jointId}`);
+          merge({id: `${object.id}-joint-${jointId}`, objectId: object.id, property: `joint:${jointId}`, keys});
+        }
+        for (const motion of plan.motions) {
+          existing(result.objects, motion.objectId, '对象');
+          merge({id: `${motion.objectId}-${motion.property}`, objectId: motion.objectId, property: motion.property, keys: motion.keys});
+        }
+        break;
+      }
+      case 'camera.apply': {
+        assertFields(command, ['type', 'shotId', 'move', 'composition', 'subject', 'azimuth', 'elevation', 'fill', 'focal', 'aperture', 'pullSpeed'], command.type);
+        const shot = existing(result.shots, command.shotId, '镜头');
+        const object = result.objects.find(item => item.joints?.some(joint => joint.id === 'portrait')) ?? result.objects.find(item => item.kind === 'model');
+        if (!object) throw new Error('场景里没有可取景的模型');
+        const solved = solveMove({
+          project: result, objectId: object.id, start: shot.start, end: shot.end,
+          move: command.move, composition: command.composition, subject: command.subject,
+          azimuth: command.azimuth, elevation: command.elevation, fill: command.fill, focal: command.focal, aperture: command.aperture, pullSpeed: command.pullSpeed,
+        });
+        const {points, orbitDegrees, ...camera} = solved;
+        shot.camera = {...camera, ...(orbitDegrees !== undefined ? {orbitDegrees} : {}), ...(points ? {points} : {})};
+        shot.intent = {
+          ...shot.intent, move: command.move, composition: command.composition,
+          ...(command.subject !== undefined ? {subject: command.subject} : {}),
+          ...(command.azimuth !== undefined ? {azimuth: command.azimuth} : {}),
+          ...(command.elevation !== undefined ? {elevation: command.elevation} : {}),
+          ...(command.fill !== undefined ? {fill: command.fill} : {}),
+          ...(command.focal !== undefined ? {focal: command.focal} : {}),
+          ...(command.aperture !== undefined ? {aperture: command.aperture} : {}),
+          ...(command.pullSpeed !== undefined ? {pullSpeed: command.pullSpeed} : {}),
+        };
+        break;
+      }
+      case 'timeline.align': {
+        assertFields(command, ['type', 'bpm', 'onsets'], command.type);
+        if (command.onsets !== undefined && (!Array.isArray(command.onsets) || command.onsets.some(item => typeof item !== 'number' || !Number.isFinite(item)))) throw new Error('onsets 必须是秒数数组');
+        const aligned = realignProject(result, command.bpm, command.onsets);
+        result.shots = aligned.shots; result.tracks = aligned.tracks; result.durationFrames = aligned.durationFrames; result.film = aligned.film; result.audio = aligned.audio;
+        break;
+      }
       default: throw new Error(`未知命令：${String((command as Row).type)}`);
     }
   }

@@ -8,6 +8,15 @@ test-results/
 # Local QA renders and handoff output
 /tmp-render/
 *.mp4
+!films/**/output/*.mp4
+
+# The KeyShot GLB is ~148MB. Keep it here, never commit it.
+/models/
+films/**/output/plates/
+**/__pycache__/
+*.pyc
+*.history.json
+cli/previs.bundle.mjs
 
 .DS_Store
 *.log

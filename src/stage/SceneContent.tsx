@@ -1,13 +1,14 @@
-import {createContext, useCallback, useContext, useEffect, useMemo} from 'react';
+import {createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo} from 'react';
 import {useGLTF, useTexture} from '@react-three/drei';
 import type {ThreeEvent} from '@react-three/fiber';
-import {Box3, CameraHelper, CanvasTexture, Color, DoubleSide, Euler, Group, MathUtils, Matrix4, Object3D, PerspectiveCamera, Quaternion, SRGBColorSpace, Vector3} from 'three';
+import {Box3, CameraHelper, CanvasTexture, Color, DoubleSide, Euler, Group, MathUtils, Matrix4, Mesh, MeshStandardMaterial, Object3D, PerspectiveCamera, Quaternion, SRGBColorSpace, Vector3} from 'three';
 import {evaluateCamera, evaluateProject} from '../core/evaluate';
 import {screenMountMatrix, transformMatrix} from '../core/matrices';
 import type {EvaluatedFrame, EvaluatedObject, ModelAsset, PrevisProject, SceneObject, V3} from '../core/types';
 import {evaluateActorSkeleton} from './actorRig';
 import {applyCameraPose} from './camera';
 import {applyPartMatrix, extractModelParts} from './modelParts';
+import {DeskRig, StudioGrade, StudioRig, gradeEnabled} from './studioLook';
 
 export interface SceneContentProps {
   project: PrevisProject;
@@ -22,9 +23,22 @@ export interface SceneContentProps {
 export const ObjectRegistryContext = createContext<((id: string, object: Group | null) => void) | undefined>(undefined);
 const radians = (v: V3): [number, number, number] => v.map(MathUtils.degToRad) as V3;
 
-function ProductModel({asset, object, state, assetUrl}: {asset: ModelAsset; object: SceneObject; state: EvaluatedObject; assetUrl: (file: string) => string}) {
+function ProductModel({asset, object, state, assetUrl, finish}: {asset: ModelAsset; object: SceneObject; state: EvaluatedObject; assetUrl: (file: string) => string; finish: string}) {
   const gltf = useGLTF(assetUrl(asset.file), false);
   const parts = useMemo(() => extractModelParts(gltf.scene, asset, object.partIds, object.sourceOrigin), [gltf.scene, asset, object.partIds, object.sourceOrigin]);
+  useLayoutEffect(() => {
+    if (finish !== 'studio') return;
+    for (const part of parts) part.root.traverse(node => {
+      if (!(node instanceof Mesh) || !node.material || Array.isArray(node.material)) return;
+      const material = node.material.clone();
+      if ('roughness' in material && 'metalness' in material) {
+        material.roughness = 0.34;
+        material.metalness = Math.max(0.28, material.metalness);
+        material.envMapIntensity = 1.2;
+        node.material = material;
+      }
+    });
+  }, [parts, finish]);
   // Each instance owns its cloned nodes. Geometry and materials are cached by the loader and must not be disposed by an instance.
   for (const part of parts) applyPartMatrix(part.root, state.partMatrices[part.id]);
   return <group dispose={null}>{parts.map(part => <primitive key={part.id} object={part.root} dispose={null}/>)}</group>;
@@ -58,14 +72,14 @@ function Mannequin({object, state}: {object: SceneObject; state: EvaluatedObject
   </group>;
 }
 
-function TextSurface({text}: {text: string}) {
+function TextSurface({text, studio}: {text: string; studio?: boolean}) {
   const texture = useMemo(() => {
     const canvas = document.createElement('canvas');
     canvas.width = 1024; canvas.height = 640;
     const ctx = canvas.getContext('2d');
     if (!ctx) throw new Error('无法创建屏幕文字贴图');
-    ctx.fillStyle = '#e5e8e9'; ctx.fillRect(0, 0, 1024, 640);
-    ctx.fillStyle = '#303a3c'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillStyle = studio ? '#101114' : '#e5e8e9'; ctx.fillRect(0, 0, 1024, 640);
+    ctx.fillStyle = studio ? '#f5f5f5' : '#303a3c'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     const lines: string[] = [];
     ctx.font = '500 52px system-ui, sans-serif';
     for (const paragraph of text.split('\n')) {
@@ -81,7 +95,7 @@ function TextSurface({text}: {text: string}) {
     shown.forEach((line, i) => ctx.fillText(line, 512, 320 + (i - (shown.length - 1) / 2) * fontSize * 1.25));
     const result = new CanvasTexture(canvas); result.colorSpace = SRGBColorSpace;
     return result;
-  }, [text]);
+  }, [text, studio]);
   useEffect(() => () => texture.dispose(), [texture]);
   return <mesh><planeGeometry args={[1, 1]}/><meshBasicMaterial map={texture} side={DoubleSide} toneMapped={false}/></mesh>;
 }
@@ -92,12 +106,12 @@ function ImageSurface({url}: {url: string}) {
   return <mesh><planeGeometry args={[1, 1]}/><meshBasicMaterial map={texture} side={DoubleSide} toneMapped={false}/></mesh>;
 }
 
-function Screen({object, state, project, assetUrl}: {object: SceneObject; state: EvaluatedObject; project: PrevisProject; assetUrl: (file: string) => string}) {
+function Screen({object, state, project, assetUrl, studio}: {object: SceneObject; state: EvaluatedObject; project: PrevisProject; assetUrl: (file: string) => string; studio?: boolean}) {
   const asset = project.assets.find(a => a.id === (state.screen ?? object.screen?.assetId));
   if (asset?.kind === 'image') return <ImageSurface url={assetUrl(asset.file)}/>;
   // Video assets are intentionally identified as such; this first renderer supports image/text screens.
   const text = asset?.kind === 'video' ? `${asset.name}\n视频素材 · 暂用文字预演` : state.screen ?? object.screen?.text ?? '';
-  return <TextSurface text={text}/>;
+  return <TextSurface text={text} studio={studio}/>;
 }
 
 function SceneLight({object, state}: {object: SceneObject; state: EvaluatedObject}) {
@@ -113,7 +127,7 @@ function SceneLight({object, state}: {object: SceneObject; state: EvaluatedObjec
   </>;
 }
 
-function SceneItem({object, state, project, frame, assetUrl, helpers, selected, onSelect}: {object: SceneObject; state: EvaluatedObject; project: PrevisProject; frame: EvaluatedFrame; assetUrl: (file: string) => string; helpers: boolean; selected: boolean; onSelect?: (id: string) => void}) {
+function SceneItem({object, state, project, frame, assetUrl, helpers, selected, onSelect, finish}: {object: SceneObject; state: EvaluatedObject; project: PrevisProject; frame: EvaluatedFrame; assetUrl: (file: string) => string; helpers: boolean; selected: boolean; onSelect?: (id: string) => void; finish: string}) {
   const register = useContext(ObjectRegistryContext);
   const registerRoot = useCallback((node: Group | null) => {register?.(object.id, node);}, [register, object.id]);
   const asset = project.assets.find(a => a.id === object.assetId);
@@ -121,11 +135,12 @@ function SceneItem({object, state, project, frame, assetUrl, helpers, selected, 
   const color = object.color ?? (object.kind === 'box' ? '#b7bec2' : '#d2d6d7');
   if (object.kind === 'model' && asset?.kind !== 'model') throw new Error(`模型对象 ${object.name} 的资源不存在`);
   return <group matrix={screenMountMatrix(project, frame, object)} matrixAutoUpdate={false}><group ref={registerRoot} name={`previs-object:${object.id}`} position={state.transform.position} rotation={radians(state.transform.rotation)} scale={state.transform.scale} visible={state.visible} onClick={onClick} userData={{previsObjectId: object.id}}>
-    {object.kind === 'model' && asset?.kind === 'model' && <ProductModel asset={asset} object={object} state={state} assetUrl={assetUrl}/>}
+    {object.kind === 'model' && asset?.kind === 'model' && <ProductModel asset={asset} object={object} state={state} assetUrl={assetUrl} finish={finish}/>}
     {object.kind === 'actor' && <Mannequin object={object} state={state}/>}
     {object.kind === 'box' && <mesh castShadow receiveShadow><boxGeometry args={[1, 1, 1]}/><meshStandardMaterial color={color} roughness={0.85}/></mesh>}
-    {object.kind === 'plane' && <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow><planeGeometry args={[1, 1]}/><meshStandardMaterial color={color} roughness={0.92} side={DoubleSide}/></mesh>}
-    {object.kind === 'screen' && <Screen object={object} state={state} project={project} assetUrl={assetUrl}/>}
+    {object.kind === 'plane' && finish === 'studio' && <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow><planeGeometry args={[1, 1]}/><shadowMaterial transparent opacity={0.5}/></mesh>}
+    {object.kind === 'plane' && finish !== 'studio' && <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow><planeGeometry args={[1, 1]}/><meshStandardMaterial color={color} roughness={0.92} metalness={0.02} side={DoubleSide}/></mesh>}
+    {object.kind === 'screen' && <Screen object={object} state={state} project={project} assetUrl={assetUrl} studio={finish === 'studio'}/>}
     {object.kind === 'light' && <SceneLight object={object} state={state}/>}
     {helpers && object.kind === 'light' && <mesh><sphereGeometry args={[0.055, 10, 8]}/><meshBasicMaterial color={selected ? '#168b9a' : '#bd8d3d'}/></mesh>}
     {helpers && selected && <axesHelper args={[0.2]}/>}
@@ -162,19 +177,26 @@ function CameraGuides({project, frame}: {project: PrevisProject; frame: Evaluate
 /** Used unchanged inside ordinary R3F Canvas and Remotion ThreeCanvas. Suspense belongs to their wrapper. */
 export function SceneContent({project, frame, assetUrl, helpers = false, selectedId, onSelect}: SceneContentProps) {
   const evaluated = typeof frame === 'number' ? evaluateProject(project, frame) : frame;
+  const finish = project.film?.look === 'studio-black' ? 'studio' : project.film?.look === 'desk' ? 'desk' : 'clay';
   const hasFloor = project.objects.some(o => o.kind === 'plane' && evaluated.objects[o.id]?.visible);
   const hasLights = project.objects.some(o => o.kind === 'light' && evaluated.objects[o.id]?.visible);
   return <>
-    <color attach="background" args={['#e3e6e7']}/>
-    <ambientLight intensity={0.45}/>
-    <hemisphereLight args={['#ffffff', '#abb4b7', 0.65]}/>
-    {!hasLights && <directionalLight position={[3, 5, 4]} intensity={2.4} castShadow shadow-mapSize={[2048, 2048]} shadow-camera-left={-6} shadow-camera-right={6} shadow-camera-top={6} shadow-camera-bottom={-6} shadow-bias={-0.00015}/>}
-    {!hasFloor && <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.012, 0]} receiveShadow><planeGeometry args={[30, 30]}/><meshStandardMaterial color="#c5cbcd" roughness={0.92}/></mesh>}
+    {finish === 'studio' && <StudioRig/>}
+    {finish === 'desk' && <DeskRig/>}
+    {finish === 'clay' && <>
+      <color attach="background" args={['#e3e6e7']}/>
+      <ambientLight intensity={0.45}/>
+      <hemisphereLight args={['#ffffff', '#abb4b7', 0.65]}/>
+      {!hasLights && <directionalLight position={[3, 5, 4]} intensity={2.4} castShadow shadow-mapSize={[2048, 2048]} shadow-camera-left={-6} shadow-camera-right={6} shadow-camera-top={6} shadow-camera-bottom={-6} shadow-bias={-0.00015}/>}
+    </>}
+    {finish !== 'studio' && !hasFloor && <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.012, 0]} receiveShadow><planeGeometry args={[30, 30]}/><meshStandardMaterial color="#c5cbcd" roughness={0.92}/></mesh>}
+    {finish === 'studio' && !hasFloor && <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.004, 0]} receiveShadow><planeGeometry args={[8, 8]}/><shadowMaterial transparent opacity={0.5}/></mesh>}
     {project.objects.map(object => {
       const state = evaluated.objects[object.id];
       if (!state) throw new Error(`缺少对象的求值状态：${object.id}`);
-      return <SceneItem key={object.id} object={object} state={state} project={project} frame={evaluated} assetUrl={assetUrl} helpers={helpers} selected={selectedId === object.id} onSelect={onSelect}/>;
+      return <SceneItem key={object.id} object={object} state={state} project={project} frame={evaluated} assetUrl={assetUrl} helpers={helpers} selected={selectedId === object.id} onSelect={onSelect} finish={finish}/>;
     })}
+    {gradeEnabled(project.film?.look, project.film?.grade) && <StudioGrade focus={evaluated.camera.focusDistance} aperture={evaluated.camera.aperture}/>}
     {helpers && <CameraGuides project={project} frame={evaluated}/>}
   </>;
 }

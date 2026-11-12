@@ -1,0 +1,35 @@
+{
+  "source": "KeyShot GLB https://drive.google.com/file/d/1laS08lVB8YCPYdybRQYlttEvu5Xx3F7b/view",
+  "measured": "2026-11-12",
+  "notes": "Product-local meters. The file's lux_root scales millimetres by 0.001. armOriginWorld is the 移动机械臂 node origin. local = world - armOriginWorld. Segment nodes are siblings, not a parent chain; pivots below are those node origins (they sit on the hinge axes). Axes: segments 1-4 spin about local Z (the arm sweeps in XY). Screen normal is +X, so portrait is a roll about X. Limits are previs defaults, not certified mechanical stops — edit this file to calibrate.",
+  "armOriginWorld": [-0.2918, 0.8, 0],
+  "screenCenter": [0.27, 0.515, 0],
+  "parts": [
+    {"id": "base", "label": "底座", "role": "product", "shape": "box", "center": [0.001, 0.03, 0], "size": [0.152, 0.06, 0.2]},
+    {"id": "seg1", "label": "第一段旋转机械臂", "role": "product", "shape": "cylinder", "from": [0, 0.06, 0], "to": [-0.035, 0.111, 0], "radius": 0.028},
+    {"id": "seg2", "label": "第二段旋转机械臂", "role": "product", "shape": "cylinder", "from": [-0.035, 0.111, 0], "to": [0.0655, 0.5155, 0], "radius": 0.032},
+    {"id": "seg3", "label": "第三段旋转机械臂", "role": "product", "shape": "cylinder", "from": [0.0655, 0.5155, 0], "to": [0.1655, 0.5155, 0], "radius": 0.026},
+    {"id": "seg4", "label": "第四段旋转机械臂", "role": "product", "shape": "cylinder", "from": [0.1655, 0.5155, 0], "to": [0.242, 0.515, 0], "radius": 0.024},
+    {"id": "seg5", "label": "第五段旋转机械臂", "role": "product", "shape": "cylinder", "from": [0.242, 0.515, 0], "to": [0.27, 0.515, 0], "radius": 0.02},
+    {"id": "bracket", "label": "显示器固定支架", "role": "product", "shape": "box", "center": [0.248, 0.515, 0], "size": [0.036, 0.11, 0.11]},
+    {"id": "display", "label": "Studio Display", "role": "screen", "shape": "box", "center": [0.27, 0.515, 0], "size": [0.028, 0.34, 0.6]}
+  ],
+  "joints": [
+    {"id": "base_yaw", "label": "底座旋转", "pivot": [0, 0.03, 0], "axis": [0, 1, 0], "minDeg": -120, "maxDeg": 120, "restAngle": 0, "affects": ["base", "seg1", "seg2", "seg3", "seg4", "seg5", "bracket", "display"]},
+    {"id": "seg1", "label": "第一段", "parentId": "base_yaw", "pivot": [-0.035, 0.111, 0], "axis": [0, 0, 1], "minDeg": -25, "maxDeg": 25, "restAngle": 0, "affects": ["seg1"]},
+    {"id": "seg2", "label": "第二段", "parentId": "base_yaw", "pivot": [-0.035, 0.111, 0], "axis": [0, 0, 1], "minDeg": -75, "maxDeg": 42, "restAngle": 0, "affects": ["seg2", "seg3", "seg4", "seg5", "bracket", "display"]},
+    {"id": "seg3", "label": "第三段", "parentId": "seg2", "pivot": [0.0655, 0.5155, 0], "axis": [0, 0, 1], "minDeg": -50, "maxDeg": 85, "restAngle": 0, "affects": ["seg3", "seg4", "seg5", "bracket", "display"]},
+    {"id": "seg4", "label": "第四段", "parentId": "seg3", "pivot": [0.1655, 0.5155, 0], "axis": [0, 0, 1], "minDeg": -45, "maxDeg": 45, "restAngle": 0, "affects": ["seg4", "seg5", "bracket", "display"]},
+    {"id": "portrait", "label": "横竖屏", "parentId": "seg4", "pivot": [0.27, 0.515, 0], "axis": [1, 0, 0], "minDeg": 0, "maxDeg": 90, "restAngle": 0, "affects": ["bracket", "display"]}
+  ],
+  "poses": {
+    "folded": {"seg2": -50, "seg3": 18},
+    "closer": {"seg2": -34, "seg3": 42},
+    "far": {"seg2": 20},
+    "turned": {"base_yaw": 72},
+    "portrait": {"portrait": 90},
+    "nod": {"portrait": 90, "seg4": 18},
+    "raised": {"seg2": 16, "seg3": -12},
+    "lowered": {"seg2": -36, "seg3": 22}
+  }
+}

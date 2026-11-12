@@ -38,10 +38,26 @@ export interface SceneObject {
 }
 export interface CameraPose { position: V3; target: V3; focalLength: number; focusDistance: number; aperture: number; roll?: number }
 export type CameraMove = 'static' | 'linear' | 'orbit' | 'spline';
+export type ShotKind = '3d' | 'broll-code';
+export type FilmStyle = 'brand' | 'creator';
+export type FilmLook = 'studio-black' | 'desk';
+export interface DialogueLine { speaker: string; line: string; vo?: boolean }
+export interface BrollSpec { template: 'kinetic' | 'spec' | 'ui' | 'diagram' | 'logo'; lines: string[]; accent?: string }
+/** Authored camera intent. The solver turns this into camera.from/to; agents should edit intent, not drag a rig. */
+export interface ShotIntent {
+  move?: string; composition?: string; subject?: string; role?: string;
+  azimuth?: number; elevation?: number; fill?: number; focal?: number;
+  wantX?: number; wantY?: number; beats?: number; aperture?: number; pullSpeed?: number;
+}
 export interface Shot {
   id: string; name: string; start: number; end: number; description: string;
   camera: { from: CameraPose; to: CameraPose; move: CameraMove; easing: Easing; orbitDegrees?: number; points?: V3[]; targetBinding?: {objectId:string;partId?:string;offset?:V3;followPosition?:boolean} };
+  /** Absent means a 3D previs shot, so schema v2 projects stay valid. */
+  kind?: ShotKind; sequenceId?: string;
+  dialogue?: DialogueLine; screenContent?: string; broll?: BrollSpec; intent?: ShotIntent; videoPrompt?: string;
 }
+export interface Sequence { id: string; name: string; start: number; end: number; summary: string; role?: string }
+export interface Film { id: string; title: string; style: FilmStyle; look: FilmLook; logline: string; bpm?: number; grade?: boolean }
 export type TrackValue = number | V3 | string;
 export interface Keyframe { frame: number; value: TrackValue; easing?: Easing }
 export interface Track {
@@ -53,6 +69,8 @@ export interface PrevisProject {
   schemaVersion: 2; id: string; name: string; revision: number;
   fps: number; durationFrames: number; width: number; height: number;
   assets: Asset[]; objects: SceneObject[]; shots: Shot[]; tracks: Track[];
+  /** Long-form organisation. Shots stay the only timeline evaluateProject reads. */
+  film?: Film; sequences?: Sequence[];
   audio?: { assetId: string; startFrame: number; trimStart: number; gain: number };
   createdAt: string; updatedAt: string;
 }
@@ -78,7 +96,15 @@ export type Command =
   | {type:'track.remove'; id:string}
   | {type:'keyframe.set'; trackId:string; key:Keyframe}
   | {type:'rig.set'; objectId:string; joints:JointBinding[]}
-  | {type:'asset.add'; asset:Asset};
+  | {type:'asset.add'; asset:Asset}
+  | {type:'film.set'; film:Film}
+  | {type:'sequence.add'; sequence:Sequence}
+  | {type:'sequence.update'; id:string; patch:Partial<Omit<Sequence,'id'>>}
+  | {type:'sequence.remove'; id:string}
+  | {type:'audio.set'; audio:{assetId:string; startFrame:number; trimStart:number; gain:number}}
+  | {type:'arm.action'; objectId:string; action:string; start:number; end:number; goal?:V3; facing?:V3; distance?:number; portrait?:boolean}
+  | {type:'camera.apply'; shotId:string; move:string; composition:string; subject?:string; azimuth?:number; elevation?:number; fill?:number; focal?:number; aperture?:number; pullSpeed?:number}
+  | {type:'timeline.align'; bpm:number; onsets?:number[]};
 export interface ProjectSummary { id:string; name:string; revision:number; fps:number; durationFrames:number; width:number; height:number; objectCount:number; shotCount:number; updatedAt:string }
 export interface RenderJob { id:string; projectId:string; revision:number; status:'queued'|'rendering'|'completed'|'failed'|'cancelled'; progress:number; message:string; createdAt:string; file?:string; width:number; height:number; fps:number; error?:string }
 export const identityTransform = ():Transform => ({position:[0,0,0],rotation:[0,0,0],scale:[1,1,1]});

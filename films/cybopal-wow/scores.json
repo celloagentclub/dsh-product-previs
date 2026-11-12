@@ -1,0 +1,289 @@
+{
+  "mean": 0.96890982624813,
+  "passes": 0,
+  "vision": "geometric",
+  "scores": [
+    {
+      "shotId": "s01",
+      "composition": 1,
+      "subjectSize": 1,
+      "rhythm": 0.888888888888889,
+      "light": 1,
+      "continuity": 1,
+      "notes": [],
+      "total": 0.9777777777777779
+    },
+    {
+      "shotId": "s02",
+      "composition": 0.9999383866138356,
+      "subjectSize": 0.9996297592821005,
+      "rhythm": 1,
+      "light": 1,
+      "continuity": 0.9147016089682083,
+      "notes": [],
+      "total": 0.9870972778192153
+    },
+    {
+      "shotId": "s03",
+      "composition": 1,
+      "subjectSize": 1,
+      "rhythm": 1,
+      "light": 1,
+      "continuity": 1,
+      "notes": [],
+      "total": 1
+    },
+    {
+      "shotId": "s04",
+      "composition": 0.9981132411517819,
+      "subjectSize": 0.9988531936465571,
+      "rhythm": 1,
+      "light": 1,
+      "continuity": 0.9772917483073711,
+      "notes": [],
+      "total": 0.9958353709456904
+    },
+    {
+      "shotId": "s05",
+      "composition": 1,
+      "subjectSize": 1,
+      "rhythm": 1,
+      "light": 1,
+      "continuity": 1,
+      "notes": [],
+      "total": 1
+    },
+    {
+      "shotId": "s06",
+      "composition": 1,
+      "subjectSize": 1,
+      "rhythm": 1,
+      "light": 1,
+      "continuity": 1,
+      "notes": [],
+      "total": 1
+    },
+    {
+      "shotId": "s07",
+      "composition": 0.9958278739065165,
+      "subjectSize": 0.9971251453640508,
+      "rhythm": 1,
+      "light": 1,
+      "continuity": 0.9202943855479526,
+      "notes": [],
+      "total": 0.9862824126498347
+    },
+    {
+      "shotId": "s08",
+      "composition": 1,
+      "subjectSize": 1,
+      "rhythm": 1,
+      "light": 1,
+      "continuity": 1,
+      "notes": [],
+      "total": 1
+    },
+    {
+      "shotId": "s09",
+      "composition": 1,
+      "subjectSize": 1,
+      "rhythm": 1,
+      "light": 1,
+      "continuity": 1,
+      "notes": [],
+      "total": 1
+    },
+    {
+      "shotId": "s10",
+      "composition": 0.9564073258260276,
+      "subjectSize": 0.9986010735906629,
+      "rhythm": 0.850574712643678,
+      "light": 1,
+      "continuity": 0.9378343073191914,
+      "notes": [],
+      "total": 0.9495421884807869
+    },
+    {
+      "shotId": "s11",
+      "composition": 1,
+      "subjectSize": 1,
+      "rhythm": 1,
+      "light": 1,
+      "continuity": 1,
+      "notes": [],
+      "total": 1
+    },
+    {
+      "shotId": "s12",
+      "composition": 0.9995177749384146,
+      "subjectSize": 0.9993349309446898,
+      "rhythm": 1,
+      "light": 1,
+      "continuity": 1,
+      "notes": [],
+      "total": 0.9997131764707762
+    },
+    {
+      "shotId": "s13",
+      "composition": 1,
+      "subjectSize": 1,
+      "rhythm": 1,
+      "light": 1,
+      "continuity": 1,
+      "notes": [],
+      "total": 1
+    },
+    {
+      "shotId": "s14",
+      "composition": 0.9986578392361061,
+      "subjectSize": 0.9998581622444355,
+      "rhythm": 1,
+      "light": 1,
+      "continuity": 1,
+      "notes": [],
+      "total": 0.9996290003701354
+    },
+    {
+      "shotId": "s15",
+      "composition": 1,
+      "subjectSize": 1,
+      "rhythm": 1,
+      "light": 1,
+      "continuity": 1,
+      "notes": [],
+      "total": 1
+    },
+    {
+      "shotId": "s16",
+      "composition": 0.9995833967706403,
+      "subjectSize": 0.9960625381332743,
+      "rhythm": 1,
+      "light": 1,
+      "continuity": 1,
+      "notes": [],
+      "total": 0.9989114837259787
+    },
+    {
+      "shotId": "s17",
+      "composition": 1,
+      "subjectSize": 1,
+      "rhythm": 1,
+      "light": 1,
+      "continuity": 1,
+      "notes": [],
+      "total": 1
+    },
+    {
+      "shotId": "s18",
+      "composition": 0.522305013775803,
+      "subjectSize": 0.686246437602819,
+      "rhythm": 1,
+      "light": 1,
+      "continuity": 1,
+      "notes": [],
+      "total": 0.8021378628446556
+    },
+    {
+      "shotId": "s19",
+      "composition": 1,
+      "subjectSize": 1,
+      "rhythm": 1,
+      "light": 1,
+      "continuity": 1,
+      "notes": [],
+      "total": 1
+    },
+    {
+      "shotId": "s20",
+      "composition": 0.9984416867418218,
+      "subjectSize": 0.9982429689450503,
+      "rhythm": 1,
+      "light": 1,
+      "continuity": 1,
+      "notes": [],
+      "total": 0.999171163921718
+    },
+    {
+      "shotId": "s21",
+      "composition": 1,
+      "subjectSize": 1,
+      "rhythm": 1,
+      "light": 1,
+      "continuity": 1,
+      "notes": [],
+      "total": 1
+    },
+    {
+      "shotId": "s22",
+      "composition": 0.021863596342968968,
+      "subjectSize": 0.4025353216580553,
+      "rhythm": 1,
+      "light": 1,
+      "continuity": 1,
+      "notes": [
+        "主体出画"
+      ],
+      "total": 0.6060997295002561
+    },
+    {
+      "shotId": "s23",
+      "composition": 1,
+      "subjectSize": 1,
+      "rhythm": 1,
+      "light": 1,
+      "continuity": 1,
+      "notes": [],
+      "total": 1
+    },
+    {
+      "shotId": "s24",
+      "composition": 0.9995724985466159,
+      "subjectSize": 0.9978359325307443,
+      "rhythm": 1,
+      "light": 1,
+      "continuity": 1,
+      "notes": [],
+      "total": 0.9993521077693401
+    },
+    {
+      "shotId": "s25",
+      "composition": 1,
+      "subjectSize": 1,
+      "rhythm": 1,
+      "light": 1,
+      "continuity": 1,
+      "notes": [],
+      "total": 1
+    },
+    {
+      "shotId": "s26",
+      "composition": 0.9097050866972679,
+      "subjectSize": 0.9984926773459056,
+      "rhythm": 1,
+      "light": 1,
+      "continuity": 1,
+      "notes": [],
+      "total": 0.9770494410107935
+    },
+    {
+      "shotId": "s27",
+      "composition": 0.9566562574017933,
+      "subjectSize": 0.9992479872803418,
+      "rhythm": 0.3620689655172413,
+      "light": 1,
+      "continuity": 0.92990858257799,
+      "notes": [],
+      "total": 0.8508761416606805
+    },
+    {
+      "shotId": "s28",
+      "composition": 1,
+      "subjectSize": 1,
+      "rhythm": 1,
+      "light": 1,
+      "continuity": 1,
+      "notes": [],
+      "total": 1
+    }
+  ]
+}
