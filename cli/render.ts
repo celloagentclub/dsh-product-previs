@@ -1,4 +1,4 @@
-import {createReadStream, existsSync} from 'node:fs';
+import {createReadStream, existsSync, readdirSync} from 'node:fs';
 import {createServer} from 'node:http';
 import {mkdir, readFile} from 'node:fs/promises';
 import {dirname, extname, join, resolve} from 'node:path';
@@ -33,7 +33,9 @@ export async function renderFilm(options: {projectPath: string; out?: string; wi
   const {selectComposition, renderMedia, renderStill} = await import('@remotion/renderer');
   const server = await serve(root);
   const browserExecutable = existsSync('/usr/bin/google-chrome') ? '/usr/bin/google-chrome' : undefined;
-  const inputProps = {project: graded, assetBase: `${server.origin}/product-previs/asset?id=local`, sourceFps: project.fps, outputFps: project.fps, outputFrames: graded.durationFrames};
+  const plateDir = join(root, 'output/plates');
+  const usePlates = existsSync(plateDir) && readdirSync(plateDir).some(name => name.endsWith('.png'));
+  const inputProps = {project: graded, assetBase: `${server.origin}/product-previs/asset?id=local`, sourceFps: project.fps, outputFps: project.fps, outputFrames: graded.durationFrames, usePlates};
   try {
     const composition = await selectComposition({serveUrl: bundle, id: 'ProductPrevis', inputProps, browserExecutable, chromiumOptions: {gl: 'angle'}, timeoutInMilliseconds: 180000});
     if (options.frame !== undefined) {

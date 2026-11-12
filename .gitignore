@@ -12,6 +12,7 @@ test-results/
 
 # The KeyShot GLB is ~148MB. Keep it here, never commit it.
 /models/
+films/**/output/plates/
 *.history.json
 cli/previs.bundle.mjs
 

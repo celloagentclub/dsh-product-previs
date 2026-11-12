@@ -34,16 +34,19 @@ export function partNodeIndex(partId: string): number {
   return index + 1;
 }
 
-export const ACTIONS = ['hold', 'unfold', 'fold', 'rise', 'lower', 'follow-face', 'portrait', 'landscape', 'nod', 'cable-tuck'] as const;
+export const ACTIONS = ['hold', 'hold-folded', 'hold-portrait', 'unfold', 'unfold-eye', 'fold', 'rise', 'lower', 'follow-face', 'pull-closer', 'turn-toward', 'portrait', 'landscape', 'nod', 'cable-tuck'] as const;
 export type ArmAction = typeof ACTIONS[number];
 
 const POSE_DELTAS: Record<string, Record<string, number>> = {
   rest: {},
   folded: calibration.poses.folded,
+  closer: calibration.poses.closer,
+  far: calibration.poses.far,
+  turned: calibration.poses.turned,
   portrait: calibration.poses.portrait,
   nod: calibration.poses.nod,
-  raised: {seg2: 12, seg3: -8},
-  lowered: {seg2: -20, seg3: 16},
+  raised: calibration.poses.raised,
+  lowered: calibration.poses.lowered,
 };
 
 export function jointById(id: string): JointBinding {
@@ -58,10 +61,18 @@ export function clampJoint(id: string, angle: number): number {
 }
 
 export function poseAngles(name: string): Record<string, number> {
-  const delta = POSE_DELTAS[name];
-  if (!delta) throw new Error(`姿态不存在：${name}`);
+  return mergePoses(name);
+}
+
+/** Later poses overwrite only the joints they specify, so a yaw can sit on top of a reach. */
+export function mergePoses(...names: string[]): Record<string, number> {
   const angles: Record<string, number> = {};
-  for (const joint of ARM_JOINTS) angles[joint.id] = clampJoint(joint.id, delta[joint.id] ?? joint.restAngle);
+  for (const joint of ARM_JOINTS) angles[joint.id] = joint.restAngle;
+  for (const name of names) {
+    const delta = POSE_DELTAS[name];
+    if (!delta) throw new Error(`姿态不存在：${name}`);
+    for (const [id, value] of Object.entries(delta)) angles[id] = clampJoint(id, value);
+  }
   return angles;
 }
 
@@ -186,11 +197,15 @@ export function planAction(action: string, start: number, end: number, options: 
   const nod = poseAngles('nod');
   const motions: ActionPlan['motions'] = [];
   let from = rest, to = rest, mid: {at: number; pose: Record<string, number>} | undefined;
-  if (action === 'unfold') { from = folded; to = rest; }
+  if (action === 'hold-folded') { from = folded; to = folded; }
+  else if (action === 'hold-portrait') { const posed = mergePoses('closer', 'portrait'); from = posed; to = posed; }
+  else if (action === 'unfold' || action === 'unfold-eye') { from = folded; to = rest; }
   else if (action === 'fold') { from = rest; to = folded; }
   else if (action === 'rise') { from = poseAngles('lowered'); to = poseAngles('raised'); }
   else if (action === 'lower') { from = poseAngles('raised'); to = poseAngles('lowered'); }
-  else if (action === 'portrait') { from = rest; to = portrait; }
+  else if (action === 'pull-closer') { from = rest; to = poseAngles('closer'); }
+  else if (action === 'turn-toward') { from = mergePoses('closer', 'turned'); to = poseAngles('closer'); }
+  else if (action === 'portrait') { from = poseAngles('closer'); to = mergePoses('closer', 'portrait'); }
   else if (action === 'landscape') { from = portrait; to = rest; }
   else if (action === 'nod') {
     from = portrait; to = portrait;

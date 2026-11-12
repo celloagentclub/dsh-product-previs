@@ -22,5 +22,5 @@ export const COMMAND_CATALOG = [
   {type: 'timeline.align', summary: '按 BPM 或检测到的节拍重排切点和关键帧。'},
 ] as const;
 
-export const MOVE_CATALOG = ['slow-pull', 'slow-push', 'locked', 'orbit', 'crane', 'macro', 'handheld', 'over-shoulder'];
+export const MOVE_CATALOG = ['slow-pull', 'slow-push', 'locked', 'orbit', 'crane', 'macro', 'handheld', 'over-shoulder', 'fly-along', 'macro-orbit', 'whip', 'push-impact', 'rack-focus'];
 export const COMPOSITION_CATALOG = ['centered', 'macro', 'side', 'front', 'angle45', 'low', 'top', 'over-shoulder'];

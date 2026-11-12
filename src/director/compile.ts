@@ -66,7 +66,14 @@ export function commandsFor(narrative: Narrative, drafts: ShotDraft[]): {command
     const range = ranges[index];
     commands.push({type: 'arm.action', objectId: 'arm', action: draft.action, start: range.start, end: range.end});
   });
-  commands.push({type: 'track.set', track: {id: 'panel-screen', objectId: 'panel', property: 'screen', keys: [{frame: 0, value: 'CYBOPAL'}]}});
+  const screenKeys: {frame: number; value: string}[] = [];
+  drafts.forEach((draft, index) => {
+    if (!draft.screenContent) return;
+    const frame = ranges[index].start;
+    if (!screenKeys.some(key => key.frame === frame)) screenKeys.push({frame, value: draft.screenContent});
+  });
+  if (!screenKeys.some(key => key.frame === 0)) screenKeys.unshift({frame: 0, value: drafts.find(draft => draft.screenContent)?.screenContent ?? 'Listening'});
+  commands.push({type: 'track.set', track: {id: 'panel-screen', objectId: 'panel', property: 'screen', keys: screenKeys.sort((a, b) => a.frame - b.frame)}});
   drafts.forEach((draft, index) => {
     if (draft.kind !== '3d' || !draft.move || !draft.composition) return;
     const range = ranges[index];

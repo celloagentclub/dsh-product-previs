@@ -10,6 +10,7 @@ import {applyCommands} from '../src/core/commands';
 import {activeShot, evaluateProject} from '../src/core/evaluate';
 import type {Command, PrevisProject} from '../src/core/types';
 import {directFromBrief} from '../src/director/pipeline';
+import {ARM_JOINTS} from '../src/product/arm';
 import {promptPack, storyboardHtml} from '../src/director/prompts';
 import {renderFilm} from './render';
 
@@ -132,6 +133,27 @@ async function run(): Promise<void> {
     const target = flag('out') || join(dirname(flag('project') || '.'), command === 'storyboard' ? 'storyboard.html' : 'prompts.json');
     await writeFile(target, command === 'storyboard' ? storyboardHtml(project) : JSON.stringify(promptPack(project), null, 2));
     console.log(target);
+    return;
+  }
+  if (command === 'anim') {
+    const projectPath = flag('project');
+    if (!projectPath) throw new Error('需要 --project');
+    const project = await loadProject(projectPath);
+    const samples = [];
+    for (let frame = 0; frame < project.durationFrames; frame++) {
+      const state = evaluateProject(project, frame);
+      const shot = activeShot(project, frame);
+      if ((shot.kind ?? '3d') === 'broll-code') continue;
+      const arm = state.objects.arm;
+      samples.push({
+        f: frame, shot: shot.id, motion: shot.intent?.role === 'action', move: shot.intent?.move ?? '',
+        angles: arm?.jointAngles ?? {}, camera: state.camera, text: state.objects.panel?.screen || shot.screenContent || '',
+      });
+    }
+    const payload = {fps: project.fps, width: project.width, height: project.height, joints: ARM_JOINTS, samples};
+    const target = flag('out') || join(dirname(projectPath), 'anim.json');
+    await writeFile(target, JSON.stringify(payload));
+    console.log(`${target}  ${samples.length} 帧`);
     return;
   }
   if (command === 'render') {

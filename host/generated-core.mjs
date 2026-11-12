@@ -339,15 +339,20 @@ var arm_calibration_default = {
   joints: [
     { id: "base_yaw", label: "\u5E95\u5EA7\u65CB\u8F6C", pivot: [0, 0.03, 0], axis: [0, 1, 0], minDeg: -120, maxDeg: 120, restAngle: 0, affects: ["base", "seg1", "seg2", "seg3", "seg4", "seg5", "bracket", "display"] },
     { id: "seg1", label: "\u7B2C\u4E00\u6BB5", parentId: "base_yaw", pivot: [-0.035, 0.111, 0], axis: [0, 0, 1], minDeg: -25, maxDeg: 25, restAngle: 0, affects: ["seg1"] },
-    { id: "seg2", label: "\u7B2C\u4E8C\u6BB5", parentId: "base_yaw", pivot: [-0.035, 0.111, 0], axis: [0, 0, 1], minDeg: -58, maxDeg: 36, restAngle: 0, affects: ["seg2", "seg3", "seg4", "seg5", "bracket", "display"] },
-    { id: "seg3", label: "\u7B2C\u4E09\u6BB5", parentId: "seg2", pivot: [0.0655, 0.5155, 0], axis: [0, 0, 1], minDeg: -40, maxDeg: 72, restAngle: 0, affects: ["seg3", "seg4", "seg5", "bracket", "display"] },
+    { id: "seg2", label: "\u7B2C\u4E8C\u6BB5", parentId: "base_yaw", pivot: [-0.035, 0.111, 0], axis: [0, 0, 1], minDeg: -75, maxDeg: 42, restAngle: 0, affects: ["seg2", "seg3", "seg4", "seg5", "bracket", "display"] },
+    { id: "seg3", label: "\u7B2C\u4E09\u6BB5", parentId: "seg2", pivot: [0.0655, 0.5155, 0], axis: [0, 0, 1], minDeg: -50, maxDeg: 85, restAngle: 0, affects: ["seg3", "seg4", "seg5", "bracket", "display"] },
     { id: "seg4", label: "\u7B2C\u56DB\u6BB5", parentId: "seg3", pivot: [0.1655, 0.5155, 0], axis: [0, 0, 1], minDeg: -45, maxDeg: 45, restAngle: 0, affects: ["seg4", "seg5", "bracket", "display"] },
     { id: "portrait", label: "\u6A2A\u7AD6\u5C4F", parentId: "seg4", pivot: [0.27, 0.515, 0], axis: [1, 0, 0], minDeg: 0, maxDeg: 90, restAngle: 0, affects: ["bracket", "display"] }
   ],
   poses: {
-    folded: { seg2: -42, seg3: 48, seg4: -10 },
+    folded: { seg2: -50, seg3: 18 },
+    closer: { seg2: -34, seg3: 42 },
+    far: { seg2: 20 },
+    turned: { base_yaw: 72 },
     portrait: { portrait: 90 },
-    nod: { portrait: 90, seg4: 14 }
+    nod: { portrait: 90, seg4: 18 },
+    raised: { seg2: 16, seg3: -12 },
+    lowered: { seg2: -36, seg3: 22 }
   }
 };
 
@@ -368,14 +373,17 @@ var ARM_JOINTS = arm_calibration_default.joints.map((joint) => ({
   restAngle: joint.restAngle,
   affects: [...joint.affects]
 }));
-var ACTIONS = ["hold", "unfold", "fold", "rise", "lower", "follow-face", "portrait", "landscape", "nod", "cable-tuck"];
+var ACTIONS = ["hold", "hold-folded", "hold-portrait", "unfold", "unfold-eye", "fold", "rise", "lower", "follow-face", "pull-closer", "turn-toward", "portrait", "landscape", "nod", "cable-tuck"];
 var POSE_DELTAS = {
   rest: {},
   folded: arm_calibration_default.poses.folded,
+  closer: arm_calibration_default.poses.closer,
+  far: arm_calibration_default.poses.far,
+  turned: arm_calibration_default.poses.turned,
   portrait: arm_calibration_default.poses.portrait,
   nod: arm_calibration_default.poses.nod,
-  raised: { seg2: 12, seg3: -8 },
-  lowered: { seg2: -20, seg3: 16 }
+  raised: arm_calibration_default.poses.raised,
+  lowered: arm_calibration_default.poses.lowered
 };
 function jointById(id) {
   const joint = ARM_JOINTS.find((item) => item.id === id);
@@ -387,10 +395,16 @@ function clampJoint(id, angle) {
   return Math.min(joint.maxDeg, Math.max(joint.minDeg, angle));
 }
 function poseAngles(name) {
-  const delta = POSE_DELTAS[name];
-  if (!delta) throw new Error(`\u59FF\u6001\u4E0D\u5B58\u5728\uFF1A${name}`);
+  return mergePoses(name);
+}
+function mergePoses(...names) {
   const angles = {};
-  for (const joint of ARM_JOINTS) angles[joint.id] = clampJoint(joint.id, delta[joint.id] ?? joint.restAngle);
+  for (const joint of ARM_JOINTS) angles[joint.id] = joint.restAngle;
+  for (const name of names) {
+    const delta = POSE_DELTAS[name];
+    if (!delta) throw new Error(`\u59FF\u6001\u4E0D\u5B58\u5728\uFF1A${name}`);
+    for (const [id, value] of Object.entries(delta)) angles[id] = clampJoint(id, value);
+  }
   return angles;
 }
 function ordered(joints) {
@@ -493,7 +507,14 @@ function planAction(action, start, end, options = {}) {
   const nod = poseAngles("nod");
   const motions = [];
   let from = rest, to = rest, mid;
-  if (action === "unfold") {
+  if (action === "hold-folded") {
+    from = folded;
+    to = folded;
+  } else if (action === "hold-portrait") {
+    const posed = mergePoses("closer", "portrait");
+    from = posed;
+    to = posed;
+  } else if (action === "unfold" || action === "unfold-eye") {
     from = folded;
     to = rest;
   } else if (action === "fold") {
@@ -505,9 +526,15 @@ function planAction(action, start, end, options = {}) {
   } else if (action === "lower") {
     from = poseAngles("raised");
     to = poseAngles("lowered");
-  } else if (action === "portrait") {
+  } else if (action === "pull-closer") {
     from = rest;
-    to = portrait;
+    to = poseAngles("closer");
+  } else if (action === "turn-toward") {
+    from = mergePoses("closer", "turned");
+    to = poseAngles("closer");
+  } else if (action === "portrait") {
+    from = poseAngles("closer");
+    to = mergePoses("closer", "portrait");
   } else if (action === "landscape") {
     from = portrait;
     to = rest;
@@ -652,7 +679,7 @@ function solveCamera2(input) {
 }
 
 // src/camera/moves.ts
-var MOVE_NAMES = ["slow-pull", "slow-push", "locked", "orbit", "crane", "macro", "handheld", "over-shoulder"];
+var MOVE_NAMES = ["slow-pull", "slow-push", "locked", "orbit", "crane", "macro", "handheld", "over-shoulder", "fly-along", "macro-orbit", "whip", "push-impact", "rack-focus"];
 var COMPOSITIONS = {
   centered: { azimuth: 32, elevation: 8, wantX: 0, wantY: 0.02 },
   macro: { azimuth: 78, elevation: 6, wantX: 0, wantY: 0 },
@@ -712,17 +739,17 @@ function subjectPoints(project, objectId, frame, subject) {
   return points;
 }
 function solveMove(options) {
-  const requested = options.move === "macro" ? "slow-pull" : options.move;
+  const requested = options.move === "macro" ? "slow-pull" : options.move === "macro-orbit" ? "orbit" : options.move === "push-impact" ? "slow-push" : options.move;
   if (!MOVE_NAMES.includes(requested)) throw new Error(`\u672A\u77E5\u8FD0\u955C\uFF1A${options.move}\uFF08\u652F\u6301 ${MOVE_NAMES.join(" / ")}\uFF09`);
   const compositionName = options.composition === "macro" ? "macro" : options.move === "over-shoulder" && !COMPOSITIONS[options.composition] ? "over-shoulder" : options.composition;
   const preset = COMPOSITIONS[compositionName];
   if (!preset) throw new Error(`\u672A\u77E5\u6784\u56FE\uFF1A${options.composition}\uFF08\u652F\u6301 ${Object.keys(COMPOSITIONS).join(" / ")}\uFF09`);
   const azimuth = options.azimuth ?? preset.azimuth;
   const elevation = options.elevation ?? preset.elevation;
-  const macro = compositionName === "macro" || options.move === "macro";
-  const focal = options.focal ?? (macro ? 85 : options.move === "over-shoulder" ? 40 : 50);
-  const fill = options.fill ?? (macro ? 0.72 : requested === "locked" ? 0.52 : 0.6);
-  const aperture = options.aperture ?? (macro ? 2.8 : requested === "locked" ? 5.6 : 4);
+  const macro = compositionName === "macro" || options.move === "macro" || options.move === "macro-orbit";
+  const focal = options.focal ?? (options.move === "macro-orbit" ? 90 : macro ? 85 : options.move === "fly-along" ? 32 : options.move === "over-shoulder" ? 40 : 50);
+  const fill = options.fill ?? (macro ? 0.72 : requested === "locked" ? 0.74 : options.move === "whip" ? 0.62 : 0.6);
+  const aperture = options.aperture ?? (options.move === "rack-focus" ? 1.8 : macro ? 2.4 : requested === "locked" ? 4 : 2.8);
   const aspect = options.project.width / options.project.height;
   const subject = options.subject ?? (requested === "locked" ? "motion" : macro ? "shoulder" : "arm");
   const minDistance = macro ? 0.08 : 0.35;
@@ -735,13 +762,28 @@ function solveMove(options) {
   const framed = subject === "motion" ? toPoints : fromPoints;
   const startSolve = solveAt(framed, focal, aspect, azimuth, elevation, fill, preset.wantX, preset.wantY, minDistance);
   if (!startSolve) throw new Error(`\u6784\u56FE\u65E0\u89E3\uFF1A${options.move} / ${options.composition}`);
+  if (options.move === "rack-focus") {
+    const pose = paint(startSolve.pose);
+    const held = { ...pose, position: [...pose.position], target: [...pose.target], aperture: 1.8 };
+    return { from: { ...held, focusDistance: Math.max(0.2, pose.focusDistance * 0.28) }, to: held, move: "linear", easing: "smooth" };
+  }
   if (requested === "locked" || requested === "over-shoulder") {
     const pose = paint(startSolve.pose);
     return { from: pose, to: { ...pose, position: [...pose.position], target: [...pose.target] }, move: "static", easing: "linear" };
   }
-  if (requested === "orbit") {
-    const end2 = solveAt(fromPoints, focal, aspect, azimuth + 26, elevation, fill, preset.wantX, preset.wantY, minDistance) ?? startSolve;
-    return { from: paint(startSolve.pose), to: paint(end2.pose), move: "orbit", easing: "linear", orbitDegrees: 26 };
+  if (options.move === "whip") {
+    const end2 = solveAt(fromPoints, focal, aspect, azimuth + 78, elevation - 8, fill, preset.wantX, preset.wantY, minDistance) ?? startSolve;
+    return { from: paint(startSolve.pose), to: paint(end2.pose), move: "linear", easing: "ease-in" };
+  }
+  if (options.move === "fly-along") {
+    const end2 = solveAt(fromPoints, focal + 6, aspect, azimuth + 28, elevation + 6, Math.min(0.84, fill + 0.08), preset.wantX, preset.wantY, minDistance) ?? startSolve;
+    const mid = startSolve.pose.position.map((value, index) => (value + end2.pose.position[index]) / 2 + [0.05, 0.08, -0.12][index]);
+    return { from: paint(startSolve.pose), to: paint(end2.pose), move: "spline", easing: "smooth", points: [mid] };
+  }
+  if (options.move === "macro-orbit" || requested === "orbit") {
+    const sweep = options.move === "macro-orbit" ? 70 : 26;
+    const end2 = solveAt(fromPoints, focal, aspect, azimuth + sweep, elevation, fill, preset.wantX, preset.wantY, minDistance) ?? startSolve;
+    return { from: paint(startSolve.pose), to: paint(end2.pose), move: "orbit", easing: "smooth", orbitDegrees: options.move === "macro-orbit" ? 70 : 26 };
   }
   if (requested === "crane") {
     const end2 = solveAt(fromPoints, focal, aspect, azimuth, elevation + 16, fill, preset.wantX, preset.wantY, minDistance) ?? startSolve;
@@ -752,11 +794,11 @@ function solveMove(options) {
     const mid = startSolve.pose.position.map((value, index) => value * 0.55 + end2.pose.position[index] * 0.45 + [0.014, 8e-3, -0.01][index]);
     return { from: { ...paint(startSolve.pose), roll: -1.3 }, to: { ...paint(end2.pose), roll: 1.1 }, move: "spline", easing: "linear", points: [mid] };
   }
-  const speed = options.pullSpeed ?? PULL_SPEED;
+  const speed = options.pullSpeed ?? (options.move === "push-impact" ? 0.45 : PULL_SPEED);
   const endDistance = Math.max(minDistance + 0.02, startSolve.distance + (requested === "slow-push" ? -1 : 1) * speed * duration);
   const endFill = Math.min(0.92, Math.max(0.18, fill * (startSolve.distance / endDistance)));
   const end = solveAt(toPoints, focal, aspect, azimuth, elevation, endFill, preset.wantX, preset.wantY, minDistance) ?? startSolve;
-  return { from: paint(startSolve.pose), to: paint(end.pose), move: "linear", easing: "linear" };
+  return { from: paint(startSolve.pose), to: paint(end.pose), move: "linear", easing: options.move === "push-impact" ? "ease-out" : "linear" };
 }
 
 // src/core/commands.ts

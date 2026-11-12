@@ -11,8 +11,9 @@ import {identityTransform, type PrevisProject, type V3} from '../src/core/types'
 import {compileFilm} from '../src/director/compile';
 import {planFilm, writeNarrative} from '../src/director/plan';
 import {directFromBrief} from '../src/director/pipeline';
+import {pixelVerdict, scorePixels} from '../src/director/pixels';
 import {meanScore} from '../src/director/rubric';
-import {ARM_JOINTS, armModelAsset, lowestPoint, poseAngles, screenPosition, solveIk, transformPoint} from '../src/product/arm';
+import {ARM_JOINTS, armModelAsset, lowestPoint, mergePoses, poseAngles, screenPosition, solveIk, transformPoint} from '../src/product/arm';
 
 const near = (actual: V3, expected: V3, digits = 4) => expected.forEach((value, index) => expect(actual[index]).toBeCloseTo(value, digits));
 
@@ -58,6 +59,7 @@ describe('arm kinematics', () => {
 describe('director commands', () => {
   it('builds a brand film from a brief with both shot kinds, then undoes a batch', async () => {
     const result = await directFromBrief('40秒品牌片，对标苹果，纯黑，无旁白，电子乐 178 BPM，主角是 CyboPal 机械臂。');
+    expect(result.project.film?.title).toBe('ZEESWAY A1');
     expect(result.project.film?.style).toBe('brand');
     expect(result.project.film?.look).toBe('studio-black');
     expect(result.project.shots.some(shot => shot.kind === '3d')).toBe(true);
@@ -70,7 +72,7 @@ describe('director commands', () => {
     expect(result.mean).toBeGreaterThan(0.72);
     expect(result.project.shots.every(shot => shot.videoPrompt && shot.videoPrompt.length > 40)).toBe(true);
     const beats = result.project.shots.map(shot => shot.intent?.beats ?? 0);
-    expect(beats.some(beat => beat === 0.5)).toBe(true);
+    expect(Math.min(...beats)).toBeLessThanOrEqual(2);
     for (const shot of result.project.shots) {
       if (!shot.intent?.beats) continue;
       expect(shot.start).toBe(frameAtBeat(result.project.shots.filter(item => item.start < shot.start).reduce((sum, item) => sum + (item.intent?.beats ?? 0), 0), 178, 24));
@@ -96,12 +98,22 @@ describe('director commands', () => {
     const narrative = writeNarrative('40秒品牌片 178 BPM');
     const project = compileFilm(narrative, planFilm(narrative));
     const locked = project.shots.find(shot => shot.intent?.move === 'locked' && shot.intent.composition === 'side');
-    const pull = project.shots.find(shot => shot.intent?.move === 'slow-pull' && shot.intent.subject === 'arm');
+    const push = project.shots.find(shot => shot.intent?.move === 'push-impact');
     expect(locked?.camera.move).toBe('static');
-    expect(pull?.camera.move).toBe('linear');
-    expect(pull?.camera.easing).toBe('linear');
+    expect(push?.camera.easing).toBe('ease-out');
     const distance = (pose: {position: V3; target: V3}) => Math.hypot(...pose.position.map((value, index) => value - pose.target[index]) as V3);
-    expect(distance(pull!.camera.to)).toBeGreaterThan(distance(pull!.camera.from));
+    expect(distance(push!.camera.to)).toBeLessThan(distance(push!.camera.from));
+  });
+  it('moves the screen by a clearly readable distance', () => {
+    const folded = screenPosition(poseAngles('folded'));
+    const eye = screenPosition(poseAngles('rest'));
+    const closer = screenPosition(poseAngles('closer'));
+    const turned = screenPosition(mergePoses('closer', 'turned'));
+    const travel = (a: V3, b: V3) => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
+    expect(travel(folded, eye)).toBeGreaterThan(0.28);
+    expect(travel(eye, closer)).toBeGreaterThan(0.15);
+    expect(travel(closer, turned)).toBeGreaterThan(0.2);
+    expect(lowestPoint(poseAngles('folded'))).toBeGreaterThan(-0.02);
   });
 });
 
@@ -123,6 +135,19 @@ describe('beats', () => {
     expect(slower.film?.bpm).toBe(120);
     expect(slower.shots[0].start).toBe(0);
     for (let i = 1; i < slower.shots.length; i++) expect(slower.shots[i].start).toBeGreaterThanOrEqual(slower.shots[i - 1].end);
+  });
+});
+
+describe('pixel motion check', () => {
+  it('flags a frozen product and accepts an obvious move', () => {
+    const still = new Uint8Array(64);
+    for (let i = 0; i < 16; i++) { still[i * 4] = 210; still[i * 4 + 1] = 210; still[i * 4 + 2] = 210; still[i * 4 + 3] = 255; }
+    const moved = new Uint8Array(still);
+    for (let i = 0; i < 8; i++) { moved[i * 4] = 20; moved[i * 4 + 1] = 20; moved[i * 4 + 2] = 20; }
+    expect(pixelVerdict(scorePixels(still, still, 1), true)).toContain('动作在像素上不明显');
+    expect(pixelVerdict(scorePixels(still, moved, 1), true)).toEqual([]);
+    const empty = new Uint8Array(64);
+    expect(pixelVerdict(scorePixels(empty, empty, 1), false).join()).toContain('不在画面');
   });
 });
 

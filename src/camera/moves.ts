@@ -4,7 +4,7 @@ import type {CameraMove, CameraPose, Easing, PrevisProject, V3} from '../core/ty
 import {ARM_PARTS} from '../product/arm';
 import {solveCamera} from './solver';
 
-export const MOVE_NAMES = ['slow-pull', 'slow-push', 'locked', 'orbit', 'crane', 'macro', 'handheld', 'over-shoulder'] as const;
+export const MOVE_NAMES = ['slow-pull', 'slow-push', 'locked', 'orbit', 'crane', 'macro', 'handheld', 'over-shoulder', 'fly-along', 'macro-orbit', 'whip', 'push-impact', 'rack-focus'] as const;
 export type MoveName = typeof MOVE_NAMES[number];
 
 /** Azimuth 0 looks along Z (the arm's profile). Azimuth 90 looks along X, at the screen. */
@@ -83,17 +83,17 @@ export function solveMove(options: {
   move: string; composition: string; subject?: string;
   azimuth?: number; elevation?: number; fill?: number; focal?: number; aperture?: number; pullSpeed?: number;
 }): SolvedMove {
-  const requested = options.move === 'macro' ? 'slow-pull' : options.move;
+  const requested = options.move === 'macro' ? 'slow-pull' : options.move === 'macro-orbit' ? 'orbit' : options.move === 'push-impact' ? 'slow-push' : options.move;
   if (!MOVE_NAMES.includes(requested as MoveName)) throw new Error(`未知运镜：${options.move}（支持 ${MOVE_NAMES.join(' / ')}）`);
   const compositionName = options.composition === 'macro' ? 'macro' : options.move === 'over-shoulder' && !COMPOSITIONS[options.composition] ? 'over-shoulder' : options.composition;
   const preset = COMPOSITIONS[compositionName];
   if (!preset) throw new Error(`未知构图：${options.composition}（支持 ${Object.keys(COMPOSITIONS).join(' / ')}）`);
   const azimuth = options.azimuth ?? preset.azimuth;
   const elevation = options.elevation ?? preset.elevation;
-  const macro = compositionName === 'macro' || options.move === 'macro';
-  const focal = options.focal ?? (macro ? 85 : options.move === 'over-shoulder' ? 40 : 50);
-  const fill = options.fill ?? (macro ? 0.72 : requested === 'locked' ? 0.52 : 0.6);
-  const aperture = options.aperture ?? (macro ? 2.8 : requested === 'locked' ? 5.6 : 4);
+  const macro = compositionName === 'macro' || options.move === 'macro' || options.move === 'macro-orbit';
+  const focal = options.focal ?? (options.move === 'macro-orbit' ? 90 : macro ? 85 : options.move === 'fly-along' ? 32 : options.move === 'over-shoulder' ? 40 : 50);
+  const fill = options.fill ?? (macro ? 0.72 : requested === 'locked' ? 0.74 : options.move === 'whip' ? 0.62 : 0.6);
+  const aperture = options.aperture ?? (options.move === 'rack-focus' ? 1.8 : macro ? 2.4 : requested === 'locked' ? 4 : 2.8);
   const aspect = options.project.width / options.project.height;
   const subject = options.subject ?? (requested === 'locked' ? 'motion' : macro ? 'shoulder' : 'arm');
   const minDistance = macro ? 0.08 : 0.35;
@@ -109,13 +109,28 @@ export function solveMove(options: {
   const startSolve = solveAt(framed, focal, aspect, azimuth, elevation, fill, preset.wantX, preset.wantY, minDistance);
   if (!startSolve) throw new Error(`构图无解：${options.move} / ${options.composition}`);
 
+  if (options.move === 'rack-focus') {
+    const pose = paint(startSolve.pose);
+    const held = {...pose, position: [...pose.position] as V3, target: [...pose.target] as V3, aperture: 1.8};
+    return {from: {...held, focusDistance: Math.max(0.2, pose.focusDistance * 0.28)}, to: held, move: 'linear', easing: 'smooth'};
+  }
   if (requested === 'locked' || requested === 'over-shoulder') {
     const pose = paint(startSolve.pose);
     return {from: pose, to: {...pose, position: [...pose.position], target: [...pose.target]}, move: 'static', easing: 'linear'};
   }
-  if (requested === 'orbit') {
-    const end = solveAt(fromPoints, focal, aspect, azimuth + 26, elevation, fill, preset.wantX, preset.wantY, minDistance) ?? startSolve;
-    return {from: paint(startSolve.pose), to: paint(end.pose), move: 'orbit', easing: 'linear', orbitDegrees: 26};
+  if (options.move === 'whip') {
+    const end = solveAt(fromPoints, focal, aspect, azimuth + 78, elevation - 8, fill, preset.wantX, preset.wantY, minDistance) ?? startSolve;
+    return {from: paint(startSolve.pose), to: paint(end.pose), move: 'linear', easing: 'ease-in'};
+  }
+  if (options.move === 'fly-along') {
+    const end = solveAt(fromPoints, focal + 6, aspect, azimuth + 28, elevation + 6, Math.min(0.84, fill + 0.08), preset.wantX, preset.wantY, minDistance) ?? startSolve;
+    const mid = startSolve.pose.position.map((value, index) => (value + end.pose.position[index]) / 2 + [0.05, 0.08, -0.12][index]) as V3;
+    return {from: paint(startSolve.pose), to: paint(end.pose), move: 'spline', easing: 'smooth', points: [mid]};
+  }
+  if (options.move === 'macro-orbit' || requested === 'orbit') {
+    const sweep = options.move === 'macro-orbit' ? 70 : 26;
+    const end = solveAt(fromPoints, focal, aspect, azimuth + sweep, elevation, fill, preset.wantX, preset.wantY, minDistance) ?? startSolve;
+    return {from: paint(startSolve.pose), to: paint(end.pose), move: 'orbit', easing: 'smooth', orbitDegrees: options.move === 'macro-orbit' ? 70 : 26};
   }
   if (requested === 'crane') {
     const end = solveAt(fromPoints, focal, aspect, azimuth, elevation + 16, fill, preset.wantX, preset.wantY, minDistance) ?? startSolve;
@@ -126,9 +141,9 @@ export function solveMove(options: {
     const mid = startSolve.pose.position.map((value, index) => value * 0.55 + end.pose.position[index] * 0.45 + [0.014, 0.008, -0.01][index]) as V3;
     return {from: {...paint(startSolve.pose), roll: -1.3}, to: {...paint(end.pose), roll: 1.1}, move: 'spline', easing: 'linear', points: [mid]};
   }
-  const speed = options.pullSpeed ?? PULL_SPEED;
+  const speed = options.pullSpeed ?? (options.move === 'push-impact' ? 0.45 : PULL_SPEED);
   const endDistance = Math.max(minDistance + 0.02, startSolve.distance + (requested === 'slow-push' ? -1 : 1) * speed * duration);
   const endFill = Math.min(0.92, Math.max(0.18, fill * (startSolve.distance / endDistance)));
   const end = solveAt(toPoints, focal, aspect, azimuth, elevation, endFill, preset.wantX, preset.wantY, minDistance) ?? startSolve;
-  return {from: paint(startSolve.pose), to: paint(end.pose), move: 'linear', easing: 'linear'};
+  return {from: paint(startSolve.pose), to: paint(end.pose), move: 'linear', easing: options.move === 'push-impact' ? 'ease-out' : 'linear'};
 }
