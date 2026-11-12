@@ -25,13 +25,14 @@
     "build": "tsc --noEmit && vite build && node scripts/build-core.mjs && node scripts/build-render.mjs",
     "test": "vitest run",
     "check": "tsc --noEmit",
-    "test:host": "node --test tests/host.test.mjs tests/client.test.mjs tests/camera.test.mjs",
+    "test:host": "node --test tests/host.test.mjs tests/client.test.mjs tests/camera.test.mjs && node --experimental-strip-types --test tests/retime.test.mjs",
     "render": "node host/render-cli.mjs",
     "test:client": "node --test tests/client.test.mjs",
     "test:camera": "node --test tests/camera.test.mjs",
     "audit:camera": "node scripts/audit-frames.mjs",
     "stage:shots": "node scripts/stage-shots.mjs",
-    "handoff": "node scripts/handoff-frames.mjs && node scripts/handoff-prompts.mjs"
+    "handoff": "node scripts/handoff-frames.mjs && node scripts/handoff-prompts.mjs",
+    "test:retime": "node --experimental-strip-types --test tests/retime.test.mjs"
   },
   "dependencies": {
     "@react-three/fiber": "9.8.2",

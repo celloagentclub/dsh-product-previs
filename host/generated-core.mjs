@@ -575,11 +575,15 @@ function validateDocument(project) {
       }
     });
   }
-  if (project.audio !== void 0 && row(project.audio, "audio", ["assetId", "startFrame", "trimStart", "gain"])) {
+  if (project.audio !== void 0 && row(project.audio, "audio", ["assetId", "startFrame", "trimStart", "gain", "fadeIn", "fadeOut"])) {
     if (!assets.some((a) => a.id === project.audio.assetId && a.kind === "audio")) err("audio.assetId", "\u97F3\u9891\u8D44\u6E90\u4E0D\u5B58\u5728");
     number(project.audio.startFrame, "audio.startFrame", 0, endFrame, true);
     number(project.audio.trimStart, "audio.trimStart", 0, 86400);
     number(project.audio.gain, "audio.gain", 0, 10);
+    if (project.audio.fadeIn !== void 0) number(project.audio.fadeIn, "audio.fadeIn", 0, 60);
+    if (project.audio.fadeOut !== void 0) number(project.audio.fadeOut, "audio.fadeOut", 0, 60);
+    const fadeIn = project.audio.fadeIn ?? 0, fadeOut = project.audio.fadeOut ?? 0;
+    if (fadeIn + fadeOut > project.durationFrames / project.fps) err("audio", "\u6DE1\u5165\u6DE1\u51FA\u603B\u65F6\u957F\u8D85\u8FC7\u5F71\u7247\u65F6\u957F");
   }
   return errors;
 }

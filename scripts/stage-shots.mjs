@@ -119,9 +119,13 @@ function subjectPointsAt(frame, subjectIds) {
 }
 
 const shots = [];
+// Boundaries come from the live project so a retime (e.g. to music tempo) is not
+// overwritten when cameras are re-solved.
+const boundary = (id, fallback) => project0.shots.find(s => s.id === id) ?? fallback;
 for (const step of plan) {
-  const startFrame = step.start;
-  const endFrame = step.end - 1;
+  const live = boundary(step.id, {start: step.start, end: step.end});
+  const startFrame = live.start;
+  const endFrame = live.end - 1;
   // Cover the whole shot at both ends: animation (explode, walking, joints) makes
   // the subject bigger between samples, and a camera framed only on the endpoints
   // lets it leave the frame in the middle.
@@ -131,7 +135,7 @@ for (const step of plan) {
   const to = solveCamera({points: toPts, focalLength: step.to.focal, aspect, azimuthDeg: step.to.az, elevationDeg: step.to.el, fill: step.to.fill, wantX: step.to.cx ?? 0, wantY: step.to.cy ?? 0});
   if (!from || !to) throw new Error('无法求解镜头 ' + step.id);
   const cameraSpec = {from: from.pose, to: to.pose, move: step.orbit ? 'orbit' : 'linear', easing: 'smooth'};
-  shots.push({id: step.id, name: step.name, start: step.start, end: step.end, description: step.description, camera: cameraSpec});
+  shots.push({id: step.id, name: step.name, start: live.start, end: live.end, description: step.description, camera: cameraSpec});
   const f = r => (r ? `${r.bounds.height.toFixed(2)}h c(${r.bounds.cx.toFixed(2)},${r.bounds.cy.toFixed(2)})` : '-');
   const d = r => r ? Math.hypot(...r.pose.position.map((v, k) => v - r.pose.target[k])).toFixed(2) : '-';
   console.log(`${step.id} ${step.from.focal}->${step.to.focal}mm  ${f(from)} -> ${f(to)}  dist ${d(from)}/${d(to)}m`);

@@ -81097,7 +81097,7 @@ function N() {
   }), [t]), t.Bridge;
 }
 
-//# sourceMappingURL=index.js.map
+//# sourceMappingURL=bundle.js.map
 
 // EXTERNAL MODULE: ./node_modules/scheduler/index.js
 var scheduler = __webpack_require__(9982);
@@ -90193,7 +90193,7 @@ function createPointerEvents(store) {
 
 ;// ./node_modules/react-use-measure/dist/index.js
 function dist_g(n,t){let o;return(...i)=>{window.clearTimeout(o),o=window.setTimeout(()=>n(...i),t)}}function j({debounce:n,scroll:t,polyfill:o,offsetSize:i}={debounce:0,scroll:!1,offsetSize:!1}){const a=o||(typeof window=="undefined"?class{}:window.ResizeObserver);if(!a)throw new Error("This browser does not support ResizeObserver out of the box. See: https://github.com/react-spring/react-use-measure/#resize-observer-polyfills");const[c,h]=(0,react.useState)({left:0,top:0,width:0,height:0,bottom:0,right:0,x:0,y:0}),e=(0,react.useRef)({element:null,scrollContainers:null,resizeObserver:null,lastBounds:c,orientationHandler:null}),d=n?typeof n=="number"?n:n.scroll:null,f=n?typeof n=="number"?n:n.resize:null,w=(0,react.useRef)(!1);(0,react.useEffect)(()=>(w.current=!0,()=>void(w.current=!1)));const[z,m,s]=(0,react.useMemo)(()=>{const r=()=>{if(!e.current.element)return;const{left:y,top:C,width:H,height:O,bottom:S,right:x,x:B,y:R}=e.current.element.getBoundingClientRect(),l={left:y,top:C,width:H,height:O,bottom:S,right:x,x:B,y:R};e.current.element instanceof HTMLElement&&i&&(l.height=e.current.element.offsetHeight,l.width=e.current.element.offsetWidth),Object.freeze(l),w.current&&!D(e.current.lastBounds,l)&&h(e.current.lastBounds=l)};return[r,f?dist_g(r,f):r,d?dist_g(r,d):r]},[h,i,d,f]);function v(){e.current.scrollContainers&&(e.current.scrollContainers.forEach(r=>r.removeEventListener("scroll",s,!0)),e.current.scrollContainers=null),e.current.resizeObserver&&(e.current.resizeObserver.disconnect(),e.current.resizeObserver=null),e.current.orientationHandler&&("orientation"in screen&&"removeEventListener"in screen.orientation?screen.orientation.removeEventListener("change",e.current.orientationHandler):"onorientationchange"in window&&window.removeEventListener("orientationchange",e.current.orientationHandler))}function b(){e.current.element&&(e.current.resizeObserver=new a(s),e.current.resizeObserver.observe(e.current.element),t&&e.current.scrollContainers&&e.current.scrollContainers.forEach(r=>r.addEventListener("scroll",s,{capture:!0,passive:!0})),e.current.orientationHandler=()=>{s()},"orientation"in screen&&"addEventListener"in screen.orientation?screen.orientation.addEventListener("change",e.current.orientationHandler):"onorientationchange"in window&&window.addEventListener("orientationchange",e.current.orientationHandler))}const L=r=>{!r||r===e.current.element||(v(),e.current.element=r,e.current.scrollContainers=dist_E(r),b())};return X(s,!!t),W(m),(0,react.useEffect)(()=>{v(),b()},[t,s,m]),(0,react.useEffect)(()=>v,[]),[L,c,z]}function W(n){(0,react.useEffect)(()=>{const t=n;return window.addEventListener("resize",t),()=>void window.removeEventListener("resize",t)},[n])}function X(n,t){(0,react.useEffect)(()=>{if(t){const o=n;return window.addEventListener("scroll",o,{capture:!0,passive:!0}),()=>void window.removeEventListener("scroll",o,!0)}},[n,t])}function dist_E(n){const t=[];if(!n||n===document.body)return t;const{overflow:o,overflowX:i,overflowY:a}=window.getComputedStyle(n);return[o,i,a].some(c=>c==="auto"||c==="scroll")&&t.push(n),[...t,...dist_E(n.parentElement)]}const k=["x","y","top","bottom","left","right","width","height"],D=(n,t)=>k.every(o=>n[o]===t[o]);
-//# sourceMappingURL=index.js.map
+//# sourceMappingURL=bundle.js.map
 
 ;// ./node_modules/@react-three/fiber/dist/react-three-fiber.esm.js
 
@@ -91104,7 +91104,7 @@ function DRACOWorker() {
   }
 }
 
-//# sourceMappingURL=DRACOLoader.js.map
+//# sourceMappingURL=bundle.js.map
 
 ;// ./node_modules/three-stdlib/libs/MeshoptDecoder.js
 let generated;
@@ -91326,7 +91326,7 @@ const MeshoptDecoder = () => {
   return generated;
 };
 
-//# sourceMappingURL=MeshoptDecoder.js.map
+//# sourceMappingURL=bundle.js.map
 
 ;// ./node_modules/three-stdlib/utils/BufferGeometryUtils.js
 /* unused harmony import specifier */ var BufferGeometryUtils_BufferGeometry;
@@ -91963,13 +91963,13 @@ function toCreasedNormals(geometry, creaseAngle = Math.PI / 3) {
   return resultGeometry;
 }
 
-//# sourceMappingURL=BufferGeometryUtils.js.map
+//# sourceMappingURL=bundle.js.map
 
 ;// ./node_modules/three-stdlib/_polyfill/constants.js
 
 const version = /* @__PURE__ */ (() => parseInt(REVISION.replace(/\D+/g, "")))();
 
-//# sourceMappingURL=constants.js.map
+//# sourceMappingURL=bundle.js.map
 
 ;// ./node_modules/three-stdlib/_polyfill/LoaderUtils.js
 function decodeText(array) {
@@ -91987,7 +91987,7 @@ function decodeText(array) {
   }
 }
 
-//# sourceMappingURL=LoaderUtils.js.map
+//# sourceMappingURL=bundle.js.map
 
 ;// ./node_modules/three-stdlib/loaders/GLTFLoader.js
 
@@ -94612,7 +94612,7 @@ function addPrimitiveAttributes(geometry, primitiveDef, parser) {
   });
 }
 
-//# sourceMappingURL=GLTFLoader.js.map
+//# sourceMappingURL=bundle.js.map
 
 ;// ./node_modules/@react-three/drei/core/Gltf.js
 /* unused harmony import specifier */ var _extends;
@@ -95391,6 +95391,14 @@ function Composition_Camera({ pose, aspect }) {
   }, [camera, pose, aspect]);
   return null;
 }
+function MusicLayer({ src, trimStart, gain, fadeIn, fadeOut }) {
+  const frame = (0,esm.useCurrentFrame)();
+  const { fps, durationInFrames } = (0,esm.useVideoConfig)();
+  const inFade = fadeIn > 0 ? Math.min(1, frame / (fadeIn * fps)) : 1;
+  const outFade = fadeOut > 0 ? Math.min(1, Math.max(0, (durationInFrames - frame - 1) / (fadeOut * fps))) : 1;
+  const volume = Math.max(0, Math.min(1, gain * Math.min(inFade, outFade)));
+  return /* @__PURE__ */ (0,jsx_runtime.jsx)(esm.Audio, { src, trimBefore: Math.round(trimStart * fps), volume });
+}
 function AssetPending() {
   const [handle] = (0,react.useState)(() => (0,esm.delayRender)("\u6B63\u5728\u51C6\u5907\u4E09\u7EF4\u4EA7\u54C1\u8D44\u6E90", { timeoutInMilliseconds: 12e4 }));
   (0,react.useEffect)(() => () => (0,esm.continueRender)(handle), [handle]);
@@ -95446,7 +95454,7 @@ function PrevisComposition({ project, assetBase, frameOffset = 0, sourceFps }) {
         /* @__PURE__ */ (0,jsx_runtime.jsx)(FrameReady, { frame: sourceFrame })
       ] })
     ] }),
-    audio && project.audio ? /* @__PURE__ */ (0,jsx_runtime.jsx)(esm.Sequence, { from: Math.round(project.audio.startFrame * config.fps / project.fps), children: /* @__PURE__ */ (0,jsx_runtime.jsx)(esm.Audio, { src: assetUrl(audio.file), trimBefore: Math.round(project.audio.trimStart * config.fps), volume: project.audio.gain }) }) : null
+    audio && project.audio ? /* @__PURE__ */ (0,jsx_runtime.jsx)(esm.Sequence, { from: Math.round(project.audio.startFrame * config.fps / project.fps), children: /* @__PURE__ */ (0,jsx_runtime.jsx)(MusicLayer, { src: assetUrl(audio.file), trimStart: project.audio.trimStart, gain: project.audio.gain, fadeIn: project.audio.fadeIn ?? 0, fadeOut: project.audio.fadeOut ?? 0 }) }) : null
   ] });
 }
 
@@ -131227,3 +131235,4 @@ var NoReactInternals = {
 /******/ 	
 /******/ })()
 ;
+//# sourceMappingURL=bundle.js.map

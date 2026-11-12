@@ -7,6 +7,7 @@ import {selectComposition, renderStill} from '@remotion/renderer';
 import {readFile, writeFile, mkdir, readdir} from 'node:fs/promises';
 import {existsSync} from 'node:fs';
 import {join} from 'node:path';
+import {fileURLToPath} from 'node:url';
 import {homedir} from 'node:os';
 
 const ROOT = fileURLToPath(new URL('../', import.meta.url));

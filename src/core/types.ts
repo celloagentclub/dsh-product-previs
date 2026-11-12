@@ -53,7 +53,12 @@ export interface PrevisProject {
   schemaVersion: 2; id: string; name: string; revision: number;
   fps: number; durationFrames: number; width: number; height: number;
   assets: Asset[]; objects: SceneObject[]; shots: Shot[]; tracks: Track[];
-  audio?: { assetId: string; startFrame: number; trimStart: number; gain: number };
+  /**
+   * Background music. `trimStart` is where playback begins in the source file,
+   * `fadeIn`/`fadeOut` are seconds applied over the film edit, and `gain` is <1
+   * because music sits under the picture on a previs.
+   */
+  audio?: { assetId: string; startFrame: number; trimStart: number; gain: number; fadeIn?: number; fadeOut?: number };
   createdAt: string; updatedAt: string;
 }
 export interface PoseBlend<T extends string> { from: T; to: T; mix: number }

@@ -251,9 +251,14 @@ function validateDocument(project: PrevisProject): string[] {
       }
     });
   }
-  if (project.audio !== undefined && row(project.audio, 'audio', ['assetId', 'startFrame', 'trimStart', 'gain'])) {
+  if (project.audio !== undefined && row(project.audio, 'audio', ['assetId', 'startFrame', 'trimStart', 'gain', 'fadeIn', 'fadeOut'])) {
     if (!assets.some(a => a.id === project.audio!.assetId && a.kind === 'audio')) err('audio.assetId', '音频资源不存在');
     number(project.audio.startFrame, 'audio.startFrame', 0, endFrame, true); number(project.audio.trimStart, 'audio.trimStart', 0, 86400); number(project.audio.gain, 'audio.gain', 0, 10);
+    // Fades are seconds of the finished edit; they may not overlap past the film.
+    if (project.audio.fadeIn !== undefined) number(project.audio.fadeIn, 'audio.fadeIn', 0, 60);
+    if (project.audio.fadeOut !== undefined) number(project.audio.fadeOut, 'audio.fadeOut', 0, 60);
+    const fadeIn = project.audio.fadeIn ?? 0, fadeOut = project.audio.fadeOut ?? 0;
+    if (fadeIn + fadeOut > project.durationFrames / project.fps) err('audio', '淡入淡出总时长超过影片时长');
   }
   return errors;
 }
